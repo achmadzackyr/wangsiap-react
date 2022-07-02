@@ -33,7 +33,7 @@ const Penjualan = () => {
       });
   };
 
-  useEffect(() => {
+  const GetData = () => {
     setLoading(true);
     axios
       .post(`${kon.API_URL}/api/gateway/order-list?page=${page}`)
@@ -52,6 +52,10 @@ const Penjualan = () => {
       .finally(() => {
         setLoading(false);
       });
+  };
+
+  useEffect(() => {
+    GetData();
   }, [page]);
   return (
     <PrivateLayout title="Penjualan" active="Penjualan" loading={loading}>
@@ -60,12 +64,15 @@ const Penjualan = () => {
           <Card>
             <Card.Body>
               <Row>
-                <Col md={9} sm={12}>
+                <Col md={8} sm={12}>
                   Filter
                 </Col>
-                <Col md={3} sm={12} className="d-flex justify-content-evenly">
+                <Col md={4} sm={12} className="d-flex justify-content-evenly">
                   <Button href="#" variant="wangsiap-primary" size="sm">
                     Saring
+                  </Button>
+                  <Button variant="warning" size="sm" onClick={GetData}>
+                    Refresh
                   </Button>
                   <Button variant="secondary" size="sm" onClick={Export}>
                     Export
