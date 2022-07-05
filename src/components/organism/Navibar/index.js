@@ -5,6 +5,7 @@ import * as kon from '../../../constants';
 import axios from 'axios';
 import wangsiaplogo from '../../../imgs/wangsiap-logo-light.png';
 import useToken from '../../hooks/useToken';
+import useProfile from '../../hooks/useProfile';
 import Loading from '../../molecule/Loading';
 
 const Navibar = ({ active }) => {
@@ -15,6 +16,7 @@ const Navibar = ({ active }) => {
     return initialValue || '';
   });
   const { token, setToken } = useToken();
+  const { profile, setProfile } = useProfile();
   const [logoutShow, setLogoutShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -78,6 +80,7 @@ const Navibar = ({ active }) => {
               <Nav.Link className={active === 'Pengaturan' && 'active'} href="/pengaturan">
                 Pengaturan
               </Nav.Link>
+              <hr />
               <Nav.Link className={active === 'Akun' && 'active'} href="/akun">
                 Akun
               </Nav.Link>
@@ -87,6 +90,8 @@ const Navibar = ({ active }) => {
               <Nav.Link className={active === 'Pembayaran' && 'active'} href="/pembayaran">
                 Pembayaran
               </Nav.Link>
+              <hr />
+              <Navbar.Text className="ms-3">{profile}</Navbar.Text>
             </Nav>
           </Navbar.Collapse>
           <Navbar.Collapse className="justify-content-end">

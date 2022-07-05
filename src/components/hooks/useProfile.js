@@ -4,7 +4,7 @@ export default function useProfile() {
   const getProfile = () => {
     const profileString = localStorage.getItem('profile');
     const userProfile = JSON.parse(profileString);
-    return userProfile?.nama;
+    return userProfile;
   };
 
   const [profile, setProfile] = useState(getProfile());

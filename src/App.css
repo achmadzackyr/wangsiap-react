@@ -45,6 +45,10 @@
   color: #333 !important;
 }
 
+.navbar .nav-link {
+  padding-left: 15px !important;
+}
+
 .nav-link:hover, .nav-link.active {
   background-color: #25D366;
   color: white !important;

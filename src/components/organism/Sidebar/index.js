@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, NavItem } from 'react-bootstrap';
+import useProfile from '../../hooks/useProfile';
 
 export default function Sidebar({ active }) {
+  const { profile, setProfile } = useProfile();
+
   return (
     <nav id="sidebarMenu" className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-      <div className="position-sticky pt-3">
+      <div
+        className="d-flex justify-content-center bg-white py-2 mt-2 mx-3"
+        style={{ borderRadius: '5px', color: '#666' }}
+      >
+        {profile}
+      </div>
+      <div className="position-sticky pt-2">
         <ul className="nav flex-column">
           <NavItem>
             <NavLink className={active === 'Beranda' && 'active'} href="/beranda">
