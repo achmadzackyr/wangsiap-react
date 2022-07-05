@@ -36,6 +36,12 @@ export default function Sidebar({ active }) {
               Laporan
             </NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink className={active === 'Pengaturan' && 'active'} href="/pengaturan">
+              <i className="bi bi-gear"></i>
+              Pengaturan
+            </NavLink>
+          </NavItem>
         </ul>
 
         <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">

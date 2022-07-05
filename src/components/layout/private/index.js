@@ -1,7 +1,7 @@
 import React from 'react';
-import Navibar from '../../molecule/Navibar';
+import Navibar from '../../organism/Navibar';
 import { Row } from 'react-bootstrap';
-import Sidebar from '../../molecule/Sidebar';
+import Sidebar from '../../organism/Sidebar';
 import Loading from '../../molecule/Loading';
 
 export default function PrivateLayout({ children, title, active, loading }) {

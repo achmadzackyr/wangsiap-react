@@ -97,10 +97,33 @@
 }
 
 @keyframes spin {
-0% {
-  transform: rotate(360deg);
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
-100% {
-  transform: rotate(0deg);
+
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
 }
+
+.notif {
+  position: absolute !important;
+  top: 10px;
+  right: 10px;
+}
+
+.logout-button {
+  background-color: #3a5664 !important;
+  border-color: #3a5664 !important;
+  text-decoration: underline !important;
+}
+
+.logout-button:hover {
+  background-color: #25D366 !important;
+  border-color: #25D366 !important;
+  text-decoration: none !important;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import Navibar from '../../molecule/Navibar';
+import Navibar from '../../organism/Navibar';
 
 export default function PublicLayout({ children }) {
   return (

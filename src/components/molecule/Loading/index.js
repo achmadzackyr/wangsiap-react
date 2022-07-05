@@ -7,8 +7,8 @@ const Loading = ({ loading }) => {
       {loading && (
         <Row>
           <Col>
-            <div class="loading">
-              <div class="loader"></div>
+            <div className="loading">
+              <div className="loader"></div>
             </div>
           </Col>
         </Row>
