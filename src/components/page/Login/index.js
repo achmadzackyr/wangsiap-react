@@ -40,18 +40,22 @@ function Login() {
       method: 'post',
       url: `${kon.API_URL}/api/auth/login`,
       headers: {
+        Accept: 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: data
     };
 
-    axios(config)
-      .then(function (response) {
-        setToken(response.data.data.token);
-        setProfile(response.data.data.nama);
-        setNotifMsg('Berhasil Login!');
-        setNotifVariant('success');
-        navigate('../beranda', { replace: true });
+    axios
+      .get(`${kon.API_URL}/sanctum/csrf-cookie`)
+      .then((response) => {
+        axios(config).then(function (response) {
+          setToken(response.data.data.token);
+          setProfile(response.data.data.nama);
+          setNotifMsg('Berhasil Login!');
+          setNotifVariant('success');
+          navigate('../beranda', { replace: true });
+        });
       })
       .catch(function (error) {
         setNotifMsg('Periksa Kembali Email dan Password!');
