@@ -34,6 +34,7 @@ function Pengaturan() {
   }, []);
 
   const currentUser = () => {
+    setLoading(true);
     var config = {
       method: 'get',
       url: `${kon.API_URL}/api/auth/profile`,
@@ -60,6 +61,12 @@ function Pengaturan() {
       })
       .catch(function (error) {
         console.log(error);
+        setNotifMsg('Gagal Memuat Data Pengguna');
+        setNotifVariant('danger');
+      })
+      .finally(() => {
+        setLoading(false);
+        setShowNotif(true);
       });
   };
 
@@ -91,10 +98,10 @@ function Pengaturan() {
 
     axios(config)
       .then(function (response) {
-        console.log(response);
-        // setProfile(nama);
+        setProfile(response.data.data);
         setNotifMsg('Data Pengguna Berhasil Diubah');
         setNotifVariant('success');
+        window.location.reload();
       })
       .catch(function (error) {
         setNotifMsg('Gagal Mengubah Data Pengguna');
@@ -126,6 +133,7 @@ function Pengaturan() {
             <Form.Group className="mb-3" controlId="formHp">
               <Form.Label>HP</Form.Label>
               <Form.Control
+                required
                 type="text"
                 placeholder="08123456...."
                 value={hp}
@@ -139,6 +147,7 @@ function Pengaturan() {
             <Form.Group className="mb-3" controlId="formNama">
               <Form.Label>Nama</Form.Label>
               <Form.Control
+                required
                 type="text"
                 placeholder="Masukkan Nama"
                 value={nama}
@@ -238,6 +247,7 @@ function Pengaturan() {
             <Form.Group className="mb-3" controlId="formKodepos">
               <Form.Label>Kodepos</Form.Label>
               <Form.Control
+                required
                 type="text"
                 placeholder="Masukkan Kodepos"
                 value={kodepos}
