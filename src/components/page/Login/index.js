@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Form, Image, Button } from 'react-bootstrap';
 import wangsiaplogo from '../../../imgs/wangsiap-logo-dark.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import * as kon from '../../../constants';
 import * as qs from 'qs';
 import Loading from '../../molecule/Loading';
@@ -12,6 +11,9 @@ import useToken from '../../hooks/useToken';
 import useProfile from '../../hooks/useProfile';
 
 function Login() {
+  const location = useLocation();
+  let navigate = useNavigate();
+
   const { token, setToken } = useToken();
   const { profile, setProfile } = useProfile();
 
@@ -19,14 +21,17 @@ function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
-  const [notifMsg, setNotifMsg] = useState('');
-  const [notifVariant, setNotifVariant] = useState('success');
-
-  let navigate = useNavigate();
+  const [notifMsg, setNotifMsg] = useState(location.state ? location.state.msg : '');
+  const [notifVariant, setNotifVariant] = useState(
+    location.state ? location.state.variant : 'success'
+  );
 
   useEffect(() => {
     if (token) {
       navigate('../beranda', { replace: true });
+    }
+    if (location.state) {
+      setShowNotif(true);
     }
   }, []);
 

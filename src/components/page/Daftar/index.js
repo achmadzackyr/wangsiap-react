@@ -49,10 +49,10 @@ function Daftar() {
 
     axios(config)
       .then(function (response) {
-        setToken(response.data.data.token);
-        setNotifMsg('Berhasil Daftar!');
-        setNotifVariant('success');
-        navigate('../beranda', { replace: true });
+        navigate('../login', {
+          replace: true,
+          state: { msg: 'Berhasil Daftar!', variant: 'success' }
+        });
       })
       .catch(function (error) {
         if (error.response.data.message.email != null) {
