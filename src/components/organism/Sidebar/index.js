@@ -11,7 +11,7 @@ export default function Sidebar({ active }) {
         className="d-flex justify-content-center bg-white py-2 mt-2 mx-3"
         style={{ borderRadius: '5px', color: '#666' }}
       >
-        {profile}
+        {profile?.nama}
       </div>
       <div className="position-sticky pt-2">
         <ul className="nav flex-column">

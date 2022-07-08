@@ -11,7 +11,7 @@ export default function useProfile() {
 
   const saveProfile = (userProfile) => {
     localStorage.setItem('profile', JSON.stringify(userProfile));
-    setProfile(userProfile.nama);
+    setProfile(userProfile);
   };
 
   return {

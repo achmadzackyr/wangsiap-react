@@ -141,7 +141,7 @@ function Daftar() {
         <p className="mt-5 mb-3 text-muted">Wangsiap.com &copy; 2022</p>
       </Container>
       {showNotif && (
-        <Notif variant={notifVariant} show={showNotif} setShow={setShowNotif}>
+        <Notif variant={notifVariant} show={showNotif} setShow={setShowNotif} isLogin={true}>
           {notifMsg}
         </Notif>
       )}

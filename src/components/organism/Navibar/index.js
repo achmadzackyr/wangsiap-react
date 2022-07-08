@@ -9,14 +9,9 @@ import useProfile from '../../hooks/useProfile';
 import Loading from '../../molecule/Loading';
 
 const Navibar = ({ active }) => {
-  const [name, setName] = useState(() => {
-    // getting stored value
-    const saved = localStorage.getItem('profile');
-    const initialValue = JSON.parse(saved);
-    return initialValue || '';
-  });
-  const { token, setToken } = useToken();
   const { profile, setProfile } = useProfile();
+
+  const { token, setToken } = useToken();
   const [logoutShow, setLogoutShow] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -91,7 +86,7 @@ const Navibar = ({ active }) => {
                 Pembayaran
               </Nav.Link>
               <hr />
-              <Navbar.Text className="ms-3">{profile}</Navbar.Text>
+              <Navbar.Text className="ms-3">{profile?.nama}</Navbar.Text>
             </Nav>
           </Navbar.Collapse>
           <Navbar.Collapse className="justify-content-end">

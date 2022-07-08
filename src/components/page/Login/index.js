@@ -54,17 +54,19 @@ function Login() {
     axios
       .get(`${kon.API_URL}/sanctum/csrf-cookie`)
       .then((response) => {
-        axios(config).then(function (response) {
-          setToken(response.data.data.token);
-          setProfile(response.data.data.nama);
-          setNotifMsg('Berhasil Login!');
-          setNotifVariant('success');
-          navigate('../beranda', { replace: true });
-        });
-      })
-      .catch(function (error) {
-        setNotifMsg('Periksa Kembali Email dan Password!');
-        setNotifVariant('danger');
+        axios(config)
+          .then(function (response) {
+            setToken(response.data.data.token);
+            setProfile(response.data.data);
+            setNotifMsg('Berhasil Login!');
+            setNotifVariant('success');
+            navigate('../beranda', { replace: true });
+          })
+          .catch(function (error) {
+            console.log('err', error);
+            setNotifMsg('Periksa Kembali Email dan Password!');
+            setNotifVariant('danger');
+          });
       })
       .finally(() => {
         setLoading(false);
@@ -125,7 +127,7 @@ function Login() {
         <p className="mt-5 mb-3 text-muted">Wangsiap.com &copy; 2022</p>
       </Container>
       {showNotif && (
-        <Notif variant={notifVariant} show={showNotif} setShow={setShowNotif}>
+        <Notif variant={notifVariant} show={showNotif} setShow={setShowNotif} isLogin={true}>
           {notifMsg}
         </Notif>
       )}
