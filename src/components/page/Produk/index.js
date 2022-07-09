@@ -4,12 +4,21 @@ import { Table, Row, Col, Pagination, Button, Card } from 'react-bootstrap';
 import axios from 'axios';
 import Loading from '../../molecule/Loading';
 import * as kon from '../../../constants';
+import { useLocation } from 'react-router-dom';
+import Notif from '../../molecule/Notif';
 
 const Produk = () => {
+  const location = useLocation();
+
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifMsg, setNotifMsg] = useState(location.state ? location.state.msg : '');
+  const [notifVariant, setNotifVariant] = useState(
+    location.state ? location.state.variant : 'success'
+  );
 
   useEffect(() => {
     setLoading(true);
@@ -31,6 +40,14 @@ const Produk = () => {
         setLoading(false);
       });
   }, [page]);
+
+  useEffect(() => {
+    if (location.state) {
+      setShowNotif(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
+
   return (
     <PrivateLayout title="Produk" active="Produk" loading={loading}>
       <Row className="mb-3">
@@ -45,7 +62,7 @@ const Produk = () => {
                   <Button href="#" variant="wangsiap-primary" size="sm">
                     Saring
                   </Button>
-                  <Button href="#" variant="secondary" size="sm">
+                  <Button href="produk/tambah" variant="secondary" size="sm">
                     Tambah
                   </Button>
                 </Col>
@@ -111,6 +128,11 @@ const Produk = () => {
           </Pagination>
         </Col>
       </Row>
+      {showNotif && (
+        <Notif variant={notifVariant} show={showNotif} setShow={setShowNotif}>
+          {notifMsg}
+        </Notif>
+      )}
     </PrivateLayout>
   );
 };

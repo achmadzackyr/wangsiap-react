@@ -66,7 +66,7 @@ function Pengaturan() {
       })
       .finally(() => {
         setLoading(false);
-        setShowNotif(true);
+        //setShowNotif(true);
       });
   };
 
@@ -104,6 +104,7 @@ function Pengaturan() {
         window.location.reload();
       })
       .catch(function (error) {
+        //console.log(error.response.data.data);
         setNotifMsg('Gagal Mengubah Data Pengguna');
         setNotifVariant('danger');
       })
