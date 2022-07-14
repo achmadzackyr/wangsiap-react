@@ -8,11 +8,11 @@ import * as qs from 'qs';
 import useProfile from '../../hooks/useProfile';
 import useToken from '../../hooks/useToken';
 import Notif from '../../molecule/Notif';
-import { useNavigate } from 'react-router-dom';
-import CommaValidation from '../../helpers/CommaValidation';
+import { useNavigate, useParams } from 'react-router-dom';
 
-const TambahProduk = () => {
+const DetailProduk = () => {
   let navigate = useNavigate();
+  const { skuParam, action } = useParams();
 
   const { profile, setProfile } = useProfile();
   const { token, setToken } = useToken();
@@ -22,7 +22,8 @@ const TambahProduk = () => {
   const [notifMsg, setNotifMsg] = useState('');
   const [notifVariant, setNotifVariant] = useState('success');
 
-  const [sku, setSku] = useState('');
+  const [sku, setSku] = useState(skuParam ? skuParam : '');
+  const [id, setId] = useState('');
   const [nama, setNama] = useState('');
   const [harga, setHarga] = useState('');
   const [berat, setBerat] = useState('');
@@ -32,7 +33,6 @@ const TambahProduk = () => {
   const [volume, setVolume] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [pecahBelah, setPecahBelah] = useState(0);
-  //   const [chargeable, setChargeable] = useState('');
 
   const panjangChange = (e) => {
     setPanjang(e.target.value);
@@ -51,22 +51,51 @@ const TambahProduk = () => {
 
   const beratChange = (e) => {
     setBerat(e.target.value);
-    //calculateChargeable(e.target.value, volume);
   };
 
   const calculateVolume = (panjang, lebar, tinggi) => {
     let v = (panjang * lebar * tinggi) / 6000;
     setVolume(v.toFixed(2));
-    //calculateChargeable(berat, v);
   };
 
-  //   const calculateChargeable = (berat, volume) => {
-  //     if (berat > volume) {
-  //       setChargeable(berat / 1000);
-  //     } else {
-  //       setChargeable(volume / 6000);
-  //     }
-  //   };
+  useEffect(() => {
+    setLoading(true);
+    var data = qs.stringify({
+      sku: sku
+    });
+
+    var config = {
+      method: 'post',
+      url: `${kon.API_URL}/api/products/getBySku`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: data
+    };
+
+    axios(config)
+      .then(function (response) {
+        const x = response.data.data;
+        setId(x.id);
+        setNama(x.nama);
+        setHarga(x.harga);
+        setBerat(x.berat);
+        setLebar(x.lebar);
+        setTinggi(x.tinggi);
+        setPanjang(x.panjang);
+        setVolume(x.volume);
+        setDeskripsi(x.deskripsi);
+        setPecahBelah(x.pecah_belah);
+      })
+      .catch(function (error) {
+        setNotifMsg(error.response.data.message);
+        setNotifVariant('danger');
+        setShowNotif(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const addProduct = (e) => {
     setLoading(true);
@@ -74,16 +103,14 @@ const TambahProduk = () => {
       user_id: profile?.id,
       sku: sku,
       nama: nama,
-      deskripsi: deskripsi,
-      harga: CommaValidation(harga),
-      berat: CommaValidation(berat),
-      lebar: CommaValidation(lebar),
-      tinggi: CommaValidation(tinggi),
-      panjang: CommaValidation(panjang),
+      harga: harga,
+      berat: berat,
+      lebar: lebar,
+      tinggi: tinggi,
+      panjang: panjang,
       pecah_belah: pecahBelah,
       aktif: '1'
     });
-
     var config = {
       method: 'post',
       url: `${kon.API_URL}/api/products`,
@@ -101,7 +128,6 @@ const TambahProduk = () => {
         });
       })
       .catch(function (error) {
-        console.log(error);
         setNotifMsg(error.response.data.message);
         setNotifVariant('danger');
       })
@@ -114,7 +140,7 @@ const TambahProduk = () => {
 
   return (
     <PrivateLayout
-      title="Tambah Produk"
+      title="Detail Produk"
       active="Produk"
       loading={loading}
       prevs={[{ text: 'Produk', link: '/produk' }]}
@@ -308,4 +334,4 @@ const TambahProduk = () => {
   );
 };
 
-export default TambahProduk;
+export default DetailProduk;

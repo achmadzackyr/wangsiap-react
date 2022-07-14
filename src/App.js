@@ -7,6 +7,8 @@ import Pelanggan from './components/page/Pelanggan';
 import PelangganDetail from './components/page/Pelanggan/detail';
 import Produk from './components/page/Produk';
 import TambahProduk from './components/page/Produk/tambah';
+import EditProduk from './components/page/Produk/edit';
+import DetailProduk from './components/page/Produk/detail';
 import Penjualan from './components/page/Penjualan';
 import Pengaturan from './components/page/Pengaturan';
 import Daftar from './components/page/Daftar';
@@ -36,6 +38,8 @@ function App() {
         <Route path="pelanggan/:pelangganId" element={<PelangganDetail />} />
         <Route path="produk" element={<Produk />} />
         <Route path="produk/tambah" element={<TambahProduk />} />
+        <Route path="produk/:skuParam" element={<DetailProduk />} />
+        <Route path="produk/:skuParam/edit" element={<EditProduk />} />
         <Route path="penjualan" element={<Penjualan />} />
         <Route path="pengaturan" element={<Pengaturan />} />
         <Route path="daftar" element={<Daftar />} />

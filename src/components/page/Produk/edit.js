@@ -8,11 +8,12 @@ import * as qs from 'qs';
 import useProfile from '../../hooks/useProfile';
 import useToken from '../../hooks/useToken';
 import Notif from '../../molecule/Notif';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import CommaValidation from '../../helpers/CommaValidation';
 
-const TambahProduk = () => {
+const EditProduk = () => {
   let navigate = useNavigate();
+  const { skuParam } = useParams();
 
   const { profile, setProfile } = useProfile();
   const { token, setToken } = useToken();
@@ -22,7 +23,8 @@ const TambahProduk = () => {
   const [notifMsg, setNotifMsg] = useState('');
   const [notifVariant, setNotifVariant] = useState('success');
 
-  const [sku, setSku] = useState('');
+  const [sku, setSku] = useState(skuParam ? skuParam : '');
+  const [id, setId] = useState('');
   const [nama, setNama] = useState('');
   const [harga, setHarga] = useState('');
   const [berat, setBerat] = useState('');
@@ -32,7 +34,6 @@ const TambahProduk = () => {
   const [volume, setVolume] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [pecahBelah, setPecahBelah] = useState(0);
-  //   const [chargeable, setChargeable] = useState('');
 
   const panjangChange = (e) => {
     setPanjang(e.target.value);
@@ -51,27 +52,54 @@ const TambahProduk = () => {
 
   const beratChange = (e) => {
     setBerat(e.target.value);
-    //calculateChargeable(e.target.value, volume);
   };
 
   const calculateVolume = (panjang, lebar, tinggi) => {
     let v = (panjang * lebar * tinggi) / 6000;
     setVolume(v.toFixed(2));
-    //calculateChargeable(berat, v);
   };
 
-  //   const calculateChargeable = (berat, volume) => {
-  //     if (berat > volume) {
-  //       setChargeable(berat / 1000);
-  //     } else {
-  //       setChargeable(volume / 6000);
-  //     }
-  //   };
-
-  const addProduct = (e) => {
+  useEffect(() => {
     setLoading(true);
     var data = qs.stringify({
-      user_id: profile?.id,
+      sku: sku
+    });
+    var config = {
+      method: 'post',
+      url: `${kon.API_URL}/api/products/getBySku`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: data
+    };
+
+    axios(config)
+      .then(function (response) {
+        const x = response.data.data;
+        setId(x.id || '');
+        setNama(x.nama || '');
+        setHarga(x.harga || '');
+        setBerat(x.berat || '');
+        setLebar(x.lebar || '');
+        setTinggi(x.tinggi || '');
+        setPanjang(x.panjang || '');
+        calculateVolume(x.panjang || '', x.lebar || '', x.tinggi || '');
+        setDeskripsi(x.deskripsi || '');
+        setPecahBelah(x.pecah_belah);
+      })
+      .catch(function (error) {
+        setNotifMsg(error.response.data.message);
+        setNotifVariant('danger');
+        setShowNotif(true);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const editProduct = (e) => {
+    setLoading(true);
+    var data = qs.stringify({
       sku: sku,
       nama: nama,
       deskripsi: deskripsi,
@@ -81,12 +109,12 @@ const TambahProduk = () => {
       tinggi: CommaValidation(tinggi),
       panjang: CommaValidation(panjang),
       pecah_belah: pecahBelah,
-      aktif: '1'
+      aktif: '1',
+      _method: 'PUT'
     });
-
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products`,
+      url: `${kon.API_URL}/api/products/${id}`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -101,7 +129,6 @@ const TambahProduk = () => {
         });
       })
       .catch(function (error) {
-        console.log(error);
         setNotifMsg(error.response.data.message);
         setNotifVariant('danger');
       })
@@ -114,7 +141,7 @@ const TambahProduk = () => {
 
   return (
     <PrivateLayout
-      title="Tambah Produk"
+      title="Edit Produk"
       active="Produk"
       loading={loading}
       prevs={[{ text: 'Produk', link: '/produk' }]}
@@ -122,7 +149,7 @@ const TambahProduk = () => {
       <Form
         className="mb-5"
         onSubmit={(e) => {
-          addProduct(e);
+          editProduct(e);
         }}
       >
         <Row>
@@ -308,4 +335,4 @@ const TambahProduk = () => {
   );
 };
 
-export default TambahProduk;
+export default EditProduk;

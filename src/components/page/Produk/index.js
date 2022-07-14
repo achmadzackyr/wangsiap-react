@@ -99,10 +99,10 @@ const Produk = () => {
                     <td>{data.harga}</td>
                     <td className="text-center">{data.aktif === 1 ? 'Aktif' : 'Non Aktif'}</td>
                     <td className="d-flex justify-content-evenly">
-                      <Button size="sm" variant="wangsiap-primary">
+                      <Button size="sm" variant="wangsiap-primary" href={`/produk/${data.sku}`}>
                         Detail
                       </Button>
-                      <Button size="sm" variant="secondary">
+                      <Button size="sm" variant="secondary" href={`/produk/${data.sku}/edit`}>
                         Edit
                       </Button>
                       <Button size="sm" variant="danger">
