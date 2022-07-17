@@ -27,15 +27,14 @@ const Navibar = ({ active }) => {
     };
 
     axios(config)
-      .then(function (response) {
-        localStorage.clear();
-        window.location.reload();
-      })
+      .then(function (response) {})
       .catch(function (error) {
         console.log(error);
       })
       .finally(() => {
         setLoading(false);
+        localStorage.clear();
+        window.location.reload();
       });
   };
 

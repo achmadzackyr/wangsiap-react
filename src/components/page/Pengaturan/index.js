@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 import PrivateLayout from '../../layout/private';
 import * as kon from '../../../constants';
 import * as qs from 'qs';
-import { Form, Button, Row, Col, Alert } from 'react-bootstrap';
+import { Form, Button, Row, Col, FloatingLabel } from 'react-bootstrap';
 import Notif from '../../molecule/Notif';
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import axios from 'axios';
 import useProfile from '../../hooks/useProfile';
 import useToken from '../../hooks/useToken';
@@ -12,14 +13,18 @@ function Pengaturan() {
   const { profile, setProfile } = useProfile();
   const { token, setToken } = useToken();
   const [loading, setLoading] = useState(false);
+  const [loadingOrigin, setLoadingOrigin] = useState(false);
   const [showNotif, setShowNotif] = useState(false);
   const [notifMsg, setNotifMsg] = useState('');
   const [notifVariant, setNotifVariant] = useState('success');
+  const [origins, setOrigins] = useState([]);
 
   const [id, setId] = useState('');
   const [email, setEmail] = useState('');
   const [hp, setHp] = useState('');
   const [nama, setNama] = useState('');
+  const [from, setFrom] = useState('');
+  const [selectedFrom, setSelectedFrom] = useState([]);
   const [gender, setGender] = useState(0);
   const [jneId, setJneId] = useState('');
   const [jneIdCod, setJneIdCod] = useState('');
@@ -58,19 +63,47 @@ function Pengaturan() {
         setKota(x.kota ? x.kota : '');
         setProvinsi(x.provinsi ? x.provinsi : '');
         setKodepos(x.kodepos ? x.kodepos : '');
+        setFrom(x.from ? x.from : '');
+
+        var datax = qs.stringify({});
+        var configx = {
+          method: 'post',
+          url: `${kon.API_URL}/api/gateway/get-origin`,
+          headers: {},
+          data: datax
+        };
+
+        axios(configx)
+          .then(function (response) {
+            setOrigins(response.data.detail);
+            setSelectedFrom(response.data.detail.filter((v) => v.City_Code == x.from));
+          })
+          .catch(function (error) {
+            setNotifMsg('Gagal Memuat Data Kota, Silahkan Muat Ulang');
+            setNotifVariant('danger');
+            setShowNotif(true);
+          });
       })
       .catch(function (error) {
         console.log(error);
         setNotifMsg('Gagal Memuat Data Pengguna');
         setNotifVariant('danger');
+        setShowNotif(true);
       })
       .finally(() => {
         setLoading(false);
-        //setShowNotif(true);
       });
   };
 
   const updateUser = (e) => {
+    if (from === '') {
+      setNotifMsg('Harap Memilih Kota Asal Pengiriman');
+      setNotifVariant('danger');
+      setShowNotif(true);
+      e.preventDefault();
+      return false;
+    }
+
     setLoading(true);
     var data = qs.stringify({
       email: email,
@@ -83,7 +116,8 @@ function Pengaturan() {
       kecamatan: kecamatan,
       kota: kota,
       provinsi: provinsi,
-      kodepos: hp,
+      kodepos: kodepos,
+      from: from,
       _method: 'PUT'
     });
     var config = {
@@ -171,7 +205,7 @@ function Pengaturan() {
           </Col>
         </Row>
         <Row>
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3" controlId="formJneId">
               <Form.Label>JNE Id</Form.Label>
               <Form.Control
@@ -182,7 +216,7 @@ function Pengaturan() {
               />
             </Form.Group>
           </Col>
-          <Col md={6}>
+          <Col md={4}>
             <Form.Group className="mb-3" controlId="formJneIdCod">
               <Form.Label>JNE Id COD</Form.Label>
               <Form.Control
@@ -192,6 +226,36 @@ function Pengaturan() {
                 onChange={(e) => setJneIdCod(e.target.value)}
               />
             </Form.Group>
+          </Col>
+          <Col md={4}>
+            <AsyncTypeahead
+              id="origin-autocomplete"
+              isLoading={loadingOrigin}
+              onSearch={() => {}}
+              labelKey={(option) => `${option.City_Name}`}
+              onChange={(selected) => {
+                selected.length > 0 ? setFrom(selected[0].City_Code) : setFrom('');
+                setSelectedFrom(selected);
+              }}
+              options={origins}
+              selected={selectedFrom}
+              placeholder="Pilih kota asal pengiriman"
+              renderInput={({ inputRef, referenceElementRef, ...inputProps }) => {
+                return (
+                  <Form.Group className="mb-3" controlId="formFrom">
+                    <Form.Label>Kota Asal Pengiriman</Form.Label>
+                    <Form.Control
+                      required
+                      {...inputProps}
+                      ref={(node) => {
+                        inputRef(node);
+                        referenceElementRef(node);
+                      }}
+                    />
+                  </Form.Group>
+                );
+              }}
+            />
           </Col>
         </Row>
         <Row>
