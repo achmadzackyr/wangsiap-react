@@ -49,6 +49,10 @@
   padding-left: 15px !important;
 }
 
+.nav-tabs .nav-link:hover, .nav-tabs .nav-link.active {
+  color : #495057 !important;
+}
+
 .nav-link:hover, .nav-link.active {
   background-color: #25D366;
   color: white !important;

@@ -13,17 +13,19 @@ import Penjualan from './components/page/Penjualan';
 import Pengaturan from './components/page/Pengaturan';
 import Daftar from './components/page/Daftar';
 import Login from './components/page/Login';
+import Kodepos from './components/page/Kodepos';
 import { Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import useToken from './components/hooks/useToken';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function App() {
   let navigate = useNavigate();
+  const location = useLocation();
   const { token, setToken } = useToken();
 
   useEffect(() => {
-    if (!token) {
+    if (!token && location.pathname != '/kodepos') {
       navigate('../login', { replace: true });
     }
   }, []);
@@ -44,6 +46,7 @@ function App() {
         <Route path="pengaturan" element={<Pengaturan />} />
         <Route path="daftar" element={<Daftar />} />
         <Route path="login" element={<Login />} />
+        <Route path="kodepos" element={<Kodepos />} />
       </Routes>
     </div>
   );
