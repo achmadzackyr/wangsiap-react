@@ -9,7 +9,8 @@ import {
   Dropdown,
   DropdownButton,
   InputGroup,
-  Table
+  Table,
+  Alert
 } from 'react-bootstrap';
 import wangsiaplogo from '../../../imgs/wangsiap-logo-dark.png';
 import axios from 'axios';
@@ -20,13 +21,17 @@ import { Link } from 'react-router-dom';
 
 function Kodepos() {
   const [loading, setLoading] = useState(false);
+  const [notFoundDestination, setNotFoundDestination] = useState(false);
+  const [notFoundZip, setNotFoundZip] = useState(false);
   const [key, setKey] = useState('cari');
   const [cariBy, setCariBy] = useState('kecamatan');
 
   const [searchBy, setSearchBy] = useState('district');
   const [searchValue, setSearchValue] = useState('');
+  const [searchKodepos, setSearchKodepos] = useState('');
 
   const [searchResult, setSearchResult] = useState([]);
+  const [searchResultByZip, setSearchResultByZip] = useState([]);
 
   const cariByKabupaten = () => {
     setCariBy('kabupaten / kota');
@@ -36,6 +41,44 @@ function Kodepos() {
   const cariByKecamatan = () => {
     setCariBy('kecamatan');
     setSearchBy('district');
+  };
+
+  const cariDestination = (e) => {
+    if (searchKodepos.length < 5) {
+      alert('Kodepos harus 5 angka');
+      e.preventDefault();
+      return false;
+    }
+
+    setLoading(true);
+    var data = qs.stringify({
+      kodepos: searchKodepos
+    });
+    var config = {
+      method: 'post',
+      url: `${kon.API_URL}/api/gateway/get-destinations-by-zip`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: data
+    };
+
+    axios(config)
+      .then(function (response) {
+        setSearchResultByZip(response.data.data);
+        if (response.data.data.length > 0) {
+          setNotFoundDestination(false);
+        } else {
+          setNotFoundDestination(true);
+        }
+      })
+      .catch(function (error) {
+        alert(error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+    e.preventDefault();
   };
 
   const cariKodepos = (e) => {
@@ -63,6 +106,11 @@ function Kodepos() {
     axios(config)
       .then(function (response) {
         setSearchResult(response.data.data);
+        if (response.data.data.length > 0) {
+          setNotFoundZip(false);
+        } else {
+          setNotFoundZip(true);
+        }
       })
       .catch(function (error) {
         alert(error);
@@ -126,6 +174,9 @@ function Kodepos() {
                   onChange={(e) => {
                     setSearchValue(e.target.value);
                   }}
+                  onClick={() => {
+                    setNotFoundZip(false);
+                  }}
                 />
               </InputGroup>
               <div className="d-grid gap-2">
@@ -133,7 +184,11 @@ function Kodepos() {
                   Cari
                 </Button>
               </div>
-
+              {notFoundZip && (
+                <Alert key="danger" variant="danger" className="mt-3">
+                  Tidak ditemukan {cariBy} dengan nama {searchValue}
+                </Alert>
+              )}
               {searchResult.length > 0 && (
                 <Table striped bordered hover responsive size="sm" className="mt-5">
                   <thead>
@@ -146,9 +201,9 @@ function Kodepos() {
                     </tr>
                   </thead>
                   <tbody>
-                    {searchResult.map((x) => {
+                    {searchResult.map((x, index) => {
                       return (
-                        <tr>
+                        <tr key={index}>
                           <td>
                             {x.ZIP_CODE}{' '}
                             <i
@@ -173,7 +228,69 @@ function Kodepos() {
             </Form>
           </Tab>
           <Tab eventKey="cek" title="Cek Kodepos">
-            Cek
+            <Form
+              onSubmit={(e) => {
+                cariDestination(e);
+              }}
+            >
+              <Form.Control
+                type="number"
+                placeholder="Masukkan kodepos"
+                onChange={(e) => {
+                  setSearchKodepos(e.target.value);
+                }}
+                className="mb-3"
+                onClick={() => {
+                  setNotFoundDestination(false);
+                }}
+              />
+              <div className="d-grid gap-2">
+                <Button variant="wangsiap-primary" type="submit">
+                  Cek
+                </Button>
+              </div>
+              {notFoundDestination && (
+                <Alert key="danger" variant="danger" className="mt-3">
+                  Tidak ditemukan daerah dengan kodepos {searchKodepos}
+                </Alert>
+              )}
+              {searchResultByZip.length > 0 && (
+                <Table striped bordered hover responsive size="sm" className="mt-5">
+                  <thead>
+                    <tr>
+                      <th>Kodepos</th>
+                      <th>Kelurahan</th>
+                      <th>Kecamatan</th>
+                      <th>Kabupaten/Kota</th>
+                      <th>Propinsi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {searchResultByZip.map((x, index) => {
+                      return (
+                        <tr key={index}>
+                          <td>
+                            {x.ZIP_CODE}{' '}
+                            <i
+                              className="bi bi-files"
+                              style={{ color: '#25D366', cursor: 'pointer' }}
+                              onClick={() => {
+                                navigator.clipboard.writeText(x.ZIP_CODE);
+                                alert(`${x.ZIP_CODE} Berhasil Disalin`);
+                              }}
+                            ></i>
+                          </td>
+                          <td>{x.SUBDISTRICT_NAME}</td>
+                          <td>{x.DISTRICT_NAME}</td>
+                          <td>{x.CITY_NAME}</td>
+                          <td>{x.PROVINCE_NAME}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </Table>
+              )}
+            </Form>
           </Tab>
         </Tabs>
       </Container>

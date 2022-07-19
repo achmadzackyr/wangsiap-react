@@ -54,45 +54,53 @@ const Navibar = ({ active }) => {
             </Navbar.Brand>
           </Link>
           <Navbar.Toggle aria-controls="responsive-nav" />
-          <Navbar.Collapse id="responsive-nav">
-            <Nav className="me-auto d-md-none">
-              <Nav.Link className={active === 'Beranda' && 'active'} href="/beranda">
-                Beranda
-              </Nav.Link>
-              <Nav.Link className={active === 'Penjualan' && 'active'} href="/penjualan">
-                Penjualan
-              </Nav.Link>
-              <Nav.Link className={active === 'Produk' && 'active'} href="/produk">
-                Produk
-              </Nav.Link>
-              <Nav.Link className={active === 'Pelanggan' && 'active'} href="/pelanggan">
-                Pelanggan
-              </Nav.Link>
-              <Nav.Link className={active === 'Laporan' && 'active'} href="/laporan">
-                Laporan
-              </Nav.Link>
-              <Nav.Link className={active === 'Pengaturan' && 'active'} href="/pengaturan">
-                Pengaturan
-              </Nav.Link>
-              <hr />
-              <Nav.Link className={active === 'Akun' && 'active'} href="/akun">
-                Akun
-              </Nav.Link>
-              <Nav.Link className={active === 'Pengiriman' && 'active'} href="/pengiriman">
-                Pengiriman
-              </Nav.Link>
-              <Nav.Link className={active === 'Pembayaran' && 'active'} href="/pembayaran">
-                Pembayaran
-              </Nav.Link>
-              <hr />
-              <Navbar.Text className="ms-3">{profile?.nama}</Navbar.Text>
-            </Nav>
-          </Navbar.Collapse>
+          {token && (
+            <Navbar.Collapse id="responsive-nav">
+              <Nav className="me-auto d-md-none">
+                <Nav.Link className={active === 'Beranda' && 'active'} href="/beranda">
+                  Beranda
+                </Nav.Link>
+                <Nav.Link className={active === 'Penjualan' && 'active'} href="/penjualan">
+                  Penjualan
+                </Nav.Link>
+                <Nav.Link className={active === 'Produk' && 'active'} href="/produk">
+                  Produk
+                </Nav.Link>
+                <Nav.Link className={active === 'Pelanggan' && 'active'} href="/pelanggan">
+                  Pelanggan
+                </Nav.Link>
+                <Nav.Link className={active === 'Laporan' && 'active'} href="/laporan">
+                  Laporan
+                </Nav.Link>
+                <Nav.Link className={active === 'Pengaturan' && 'active'} href="/pengaturan">
+                  Pengaturan
+                </Nav.Link>
+                <hr />
+                <Nav.Link className={active === 'Akun' && 'active'} href="/akun">
+                  Akun
+                </Nav.Link>
+                <Nav.Link className={active === 'Pengiriman' && 'active'} href="/pengiriman">
+                  Pengiriman
+                </Nav.Link>
+                <Nav.Link className={active === 'Pembayaran' && 'active'} href="/pembayaran">
+                  Pembayaran
+                </Nav.Link>
+                <hr />
+                <Navbar.Text className="ms-3">{profile?.nama}</Navbar.Text>
+              </Nav>
+            </Navbar.Collapse>
+          )}
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
-              <Button onClick={() => setLogoutShow(true)} className="logout-button">
-                Keluar
-              </Button>
+              {token ? (
+                <Button onClick={() => setLogoutShow(true)} className="logout-button">
+                  Keluar
+                </Button>
+              ) : (
+                <Button href="/login" className="logout-button">
+                  Login
+                </Button>
+              )}
             </Navbar.Text>
           </Navbar.Collapse>
         </Container>

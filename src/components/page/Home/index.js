@@ -5,9 +5,8 @@ import PublicLayout from '../../layout/public';
 const Home = () => {
   return (
     <PublicLayout>
-      <Button href="/home">Home</Button>
-      <Button href="/about">About</Button>
       <Button href="/beranda">Beranda</Button>
+      <Button href="/kodepos">Kodepos</Button>
     </PublicLayout>
   );
 };
