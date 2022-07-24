@@ -4,19 +4,39 @@ import { Table, Row, Col, Pagination, Button, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import * as kon from '../../../constants';
+import * as qs from 'qs';
 
 const Penjualan = () => {
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [orderStatus, setOrderStatus] = useState('2');
+  const [noPenerima, setNoPenerima] = useState('6282321718394');
+  const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
+  const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
+  const [perPage, setPerPage] = useState(10);
 
   const Export = () => {
     setLoading(true);
-    axios
-      .get(`${kon.API_URL}/api/gateway/downloadLoader`, {
-        responseType: 'arraybuffer'
-      })
+    var data = qs.stringify({
+      order_status_id: orderStatus,
+      no_penerima: noPenerima,
+      date_from: dateFrom,
+      date_to: dateTo
+    });
+
+    var config = {
+      method: 'post',
+      url: `${kon.API_URL}/api/gateway/downloadLoader`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: data,
+      responseType: 'arraybuffer'
+    };
+
+    axios(config)
       .then((response) => {
         const today = new Date().toISOString().slice(0, 10).split('-').reverse().join('-');
 
@@ -35,13 +55,29 @@ const Penjualan = () => {
 
   const GetData = () => {
     setLoading(true);
-    axios
-      .post(`${kon.API_URL}/api/gateway/order-list?page=${page}`)
+    axios({
+      method: 'post',
+      url: `${kon.API_URL}/api/gateway/order-list`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      data: qs.stringify({
+        order_status_id: orderStatus,
+        no_penerima: noPenerima,
+        date_from: dateFrom,
+        date_to: dateTo,
+        per_page: perPage,
+        page: page
+      })
+    })
       .then(function (response) {
-        setPelangganList(response.data.data.data);
+        setPelangganList(response.data.data);
 
         let pageArray = [];
-        for (let number = 1; number <= response.data.data.last_page; number++) {
+        let total_rows = response.data.data.length > 0 ? response.data.data[0].total_row : 0;
+        let last_page = Math.ceil(total_rows / perPage);
+
+        for (let number = 1; number <= last_page; number++) {
           pageArray.push(number);
         }
         setItems(pageArray);
