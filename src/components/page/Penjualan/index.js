@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PrivateLayout from '../../layout/private';
-import { Table, Row, Col, Pagination, Button, Card } from 'react-bootstrap';
+import { Table, Row, Col, Pagination, Button, Form, Accordion } from 'react-bootstrap';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import * as kon from '../../../constants';
@@ -97,29 +97,77 @@ const Penjualan = () => {
     <PrivateLayout title="Penjualan" active="Penjualan" loading={loading}>
       <Row className="mb-3">
         <Col>
-          <Card>
-            <Card.Body>
-              <Row>
-                <Col md={8} sm={12}>
-                  Filter
-                </Col>
-                <Col md={4} sm={12} className="d-flex justify-content-evenly">
-                  <Button href="#" variant="wangsiap-primary" size="sm">
-                    Saring
-                  </Button>
-                  <Button variant="warning" size="sm" onClick={GetData}>
-                    Refresh
-                  </Button>
-                  <Button variant="secondary" size="sm" onClick={Export}>
-                    Export
-                  </Button>
-                  <Button href="#" variant="secondary" size="sm">
-                    Tambah
-                  </Button>
-                </Col>
-              </Row>
-            </Card.Body>
-          </Card>
+          <Accordion defaultActiveKey="0">
+            <Accordion.Item eventKey="0">
+              <Accordion.Header>Filter</Accordion.Header>
+              <Accordion.Body>
+                <Row>
+                  <Col md={3} sm={3}>
+                    <Form.Group className="mb-3" controlId="filterDateFrom">
+                      <Form.Label>Dari</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dateFrom}
+                        onChange={(e) => setDateFrom(e.target.value)}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3} sm={3}>
+                    <Form.Group className="mb-3" controlId="filterDateTo">
+                      <Form.Label>Sampai</Form.Label>
+                      <Form.Control
+                        type="date"
+                        value={dateTo}
+                        onChange={(e) => setDateTo(e.target.value)}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={3} sm={3}>
+                    <Form.Group className="mb-3" controlId="formOrderStatus">
+                      <Form.Label>Status</Form.Label>
+                      <Form.Select
+                        aria-label="Order Status"
+                        value={orderStatus}
+                        onChange={(e) => setOrderStatus(e.target.value)}
+                      >
+                        <option value="1">Pending</option>
+                        <option value="2">Diterima</option>
+                        <option value="5">Ditolak</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md={3} sm={3}>
+                    <Form.Group className="mb-3" controlId="formPerPage">
+                      <Form.Label>Per Halaman</Form.Label>
+                      <Form.Select
+                        aria-label="Per Page"
+                        value={perPage}
+                        onChange={(e) => setPerPage(e.target.value)}
+                      >
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col className="text-end">
+                    <Button variant="warning" size="sm" className="ms-2" onClick={GetData}>
+                      Refresh
+                    </Button>
+                    <Button variant="wangsiap-primary" size="sm" className="ms-2" onClick={Export}>
+                      Export
+                    </Button>
+                    <Button href="#" variant="secondary" size="sm" className="ms-2">
+                      Tambah
+                    </Button>
+                  </Col>
+                </Row>
+              </Accordion.Body>
+            </Accordion.Item>
+          </Accordion>
         </Col>
       </Row>
       <Row>
