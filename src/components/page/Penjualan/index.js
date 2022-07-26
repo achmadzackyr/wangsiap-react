@@ -188,12 +188,18 @@ const Penjualan = () => {
               {pelangganList.length > 0 &&
                 pelangganList.map((data, index) => (
                   <tr key={index}>
-                    <td>{data.tanggal_pesan_string}</td>
+                    <td className="text-center">{data.tanggal_pesan_string}</td>
                     <td>{data.nama}</td>
                     <td>{data.deskripsi}</td>
-                    <td>{data.total_pcs}</td>
+                    <td className="text-center">{data.total_pcs}</td>
                     <td className="text-center">{data.payment_id === 1 ? 'COD' : 'Non COD'}</td>
-                    <td>{data.order_status_id}</td>
+                    <td className="text-center">
+                      {data.order_status_id === 1
+                        ? 'Pending'
+                        : data.order_status_id === 2
+                        ? 'Diterima'
+                        : data.order_status_id === 5 && 'Ditolak'}
+                    </td>
                     <td className="d-flex justify-content-evenly">
                       <Button size="sm" variant="wangsiap-primary">
                         Detail

@@ -9,10 +9,11 @@ import useProfile from '../../hooks/useProfile';
 import useToken from '../../hooks/useToken';
 import Notif from '../../molecule/Notif';
 import { useNavigate, useParams } from 'react-router-dom';
+import CommaValidation from '../../helpers/CommaValidation';
 
 const DetailProduk = () => {
   let navigate = useNavigate();
-  const { skuParam, action } = useParams();
+  const { skuParam } = useParams();
 
   const { profile, setProfile } = useProfile();
   const { token, setToken } = useToken();
@@ -63,7 +64,6 @@ const DetailProduk = () => {
     var data = qs.stringify({
       sku: sku
     });
-
     var config = {
       method: 'post',
       url: `${kon.API_URL}/api/products/getBySku`,
@@ -76,15 +76,15 @@ const DetailProduk = () => {
     axios(config)
       .then(function (response) {
         const x = response.data.data;
-        setId(x.id);
-        setNama(x.nama);
-        setHarga(x.harga);
-        setBerat(x.berat);
-        setLebar(x.lebar);
-        setTinggi(x.tinggi);
-        setPanjang(x.panjang);
-        setVolume(x.volume);
-        setDeskripsi(x.deskripsi);
+        setId(x.id || '');
+        setNama(x.nama || '');
+        setHarga(x.harga || '');
+        setBerat(x.berat || '');
+        setLebar(x.lebar || '');
+        setTinggi(x.tinggi || '');
+        setPanjang(x.panjang || '');
+        calculateVolume(x.panjang || '', x.lebar || '', x.tinggi || '');
+        setDeskripsi(x.deskripsi || '');
         setPecahBelah(x.pecah_belah);
       })
       .catch(function (error) {
@@ -97,23 +97,24 @@ const DetailProduk = () => {
       });
   }, []);
 
-  const addProduct = (e) => {
+  const editProduct = (e) => {
     setLoading(true);
     var data = qs.stringify({
-      user_id: profile?.id,
       sku: sku,
       nama: nama,
-      harga: harga,
-      berat: berat,
-      lebar: lebar,
-      tinggi: tinggi,
-      panjang: panjang,
+      deskripsi: deskripsi,
+      harga: CommaValidation(harga),
+      berat: CommaValidation(berat),
+      lebar: CommaValidation(lebar),
+      tinggi: CommaValidation(tinggi),
+      panjang: CommaValidation(panjang),
       pecah_belah: pecahBelah,
-      aktif: '1'
+      aktif: '1',
+      _method: 'PUT'
     });
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products`,
+      url: `${kon.API_URL}/api/products/${id}`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -124,7 +125,7 @@ const DetailProduk = () => {
       .then(function (response) {
         navigate('../produk', {
           replace: true,
-          state: { msg: 'Berhasil Menambah Produk', variant: 'success' }
+          state: { msg: 'Berhasil Mengubah Produk', variant: 'success' }
         });
       })
       .catch(function (error) {
@@ -140,7 +141,7 @@ const DetailProduk = () => {
 
   return (
     <PrivateLayout
-      title="Detail Produk"
+      title="Edit Produk"
       active="Produk"
       loading={loading}
       prevs={[{ text: 'Produk', link: '/produk' }]}
@@ -148,7 +149,7 @@ const DetailProduk = () => {
       <Form
         className="mb-5"
         onSubmit={(e) => {
-          addProduct(e);
+          editProduct(e);
         }}
       >
         <Row>
@@ -304,25 +305,12 @@ const DetailProduk = () => {
               </Form.Select>
             </Form.Group>
           </Col>
-
-          {/* <Col md={6}>
-            <Form.Group className="mb-3" controlId="formChargeable">
-              <Form.Label>Berat Ditagihkan</Form.Label>
-              <InputGroup>
-                <Form.Control
-                  required
-                  type="number"
-                  value={chargeable}
-                  aria-describedby="chargeable-icon"
-                  readOnly
-                />
-                <InputGroup.Text id="chargeable-icon">kg</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-          </Col> */}
         </Row>
-        <Button variant="wangsiap-primary" type="submit">
+        <Button size="sm" variant="wangsiap-primary" type="submit">
           Simpan
+        </Button>
+        <Button size="sm" variant="secondary" href={`/produk`} className="ms-1">
+          Kembali
         </Button>
       </Form>
       {showNotif && (

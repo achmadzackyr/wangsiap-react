@@ -9,11 +9,10 @@ import useProfile from '../../hooks/useProfile';
 import useToken from '../../hooks/useToken';
 import Notif from '../../molecule/Notif';
 import { useNavigate, useParams } from 'react-router-dom';
-import CommaValidation from '../../helpers/CommaValidation';
 
-const EditProduk = () => {
+const DetailPenjualan = () => {
   let navigate = useNavigate();
-  const { skuParam } = useParams();
+  const { skuParam, action } = useParams();
 
   const { profile, setProfile } = useProfile();
   const { token, setToken } = useToken();
@@ -64,6 +63,7 @@ const EditProduk = () => {
     var data = qs.stringify({
       sku: sku
     });
+
     var config = {
       method: 'post',
       url: `${kon.API_URL}/api/products/getBySku`,
@@ -76,15 +76,15 @@ const EditProduk = () => {
     axios(config)
       .then(function (response) {
         const x = response.data.data;
-        setId(x.id || '');
-        setNama(x.nama || '');
-        setHarga(x.harga || '');
-        setBerat(x.berat || '');
-        setLebar(x.lebar || '');
-        setTinggi(x.tinggi || '');
-        setPanjang(x.panjang || '');
-        calculateVolume(x.panjang || '', x.lebar || '', x.tinggi || '');
-        setDeskripsi(x.deskripsi || '');
+        setId(x.id);
+        setNama(x.nama);
+        setHarga(x.harga);
+        setBerat(x.berat);
+        setLebar(x.lebar);
+        setTinggi(x.tinggi);
+        setPanjang(x.panjang);
+        setVolume(x.volume);
+        setDeskripsi(x.deskripsi);
         setPecahBelah(x.pecah_belah);
       })
       .catch(function (error) {
@@ -97,24 +97,23 @@ const EditProduk = () => {
       });
   }, []);
 
-  const editProduct = (e) => {
+  const addProduct = (e) => {
     setLoading(true);
     var data = qs.stringify({
+      user_id: profile?.id,
       sku: sku,
       nama: nama,
-      deskripsi: deskripsi,
-      harga: CommaValidation(harga),
-      berat: CommaValidation(berat),
-      lebar: CommaValidation(lebar),
-      tinggi: CommaValidation(tinggi),
-      panjang: CommaValidation(panjang),
+      harga: harga,
+      berat: berat,
+      lebar: lebar,
+      tinggi: tinggi,
+      panjang: panjang,
       pecah_belah: pecahBelah,
-      aktif: '1',
-      _method: 'PUT'
+      aktif: '1'
     });
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products/${id}`,
+      url: `${kon.API_URL}/api/products`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
@@ -141,7 +140,7 @@ const EditProduk = () => {
 
   return (
     <PrivateLayout
-      title="Edit Produk"
+      title="Detail Produk"
       active="Produk"
       loading={loading}
       prevs={[{ text: 'Produk', link: '/produk' }]}
@@ -149,7 +148,7 @@ const EditProduk = () => {
       <Form
         className="mb-5"
         onSubmit={(e) => {
-          editProduct(e);
+          addProduct(e);
         }}
       >
         <Row>
@@ -305,22 +304,6 @@ const EditProduk = () => {
               </Form.Select>
             </Form.Group>
           </Col>
-
-          {/* <Col md={6}>
-            <Form.Group className="mb-3" controlId="formChargeable">
-              <Form.Label>Berat Ditagihkan</Form.Label>
-              <InputGroup>
-                <Form.Control
-                  required
-                  type="number"
-                  value={chargeable}
-                  aria-describedby="chargeable-icon"
-                  readOnly
-                />
-                <InputGroup.Text id="chargeable-icon">kg</InputGroup.Text>
-              </InputGroup>
-            </Form.Group>
-          </Col> */}
         </Row>
         <Button variant="wangsiap-primary" type="submit">
           Simpan
@@ -335,4 +318,4 @@ const EditProduk = () => {
   );
 };
 
-export default EditProduk;
+export default DetailPenjualan;
