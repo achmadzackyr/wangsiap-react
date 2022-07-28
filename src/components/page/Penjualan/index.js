@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import PrivateLayout from '../../layout/private';
-import { Table, Row, Col, Pagination, Button, Form, Accordion } from 'react-bootstrap';
+import { Table, Row, Col, Pagination, Button, Form, Accordion, Modal } from 'react-bootstrap';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import * as kon from '../../../constants';
@@ -16,6 +16,11 @@ const Penjualan = () => {
   const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
   const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [perPage, setPerPage] = useState(10);
+  const [penjualan, setPenjualan] = useState({});
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifMsg, setNotifMsg] = useState('');
+  const [notifVariant, setNotifVariant] = useState('success');
+  const [deleteShow, setDeleteShow] = useState(false);
 
   const Export = () => {
     setLoading(true);
@@ -93,6 +98,42 @@ const Penjualan = () => {
   useEffect(() => {
     GetData();
   }, [page]);
+
+  const DeletePenjualan = () => {
+    setLoading(true);
+    setDeleteShow(false);
+    axios({
+      method: 'delete',
+      url: `${kon.API_URL}/api/customers/${penjualan.customer_id}`,
+      headers: {}
+    })
+      .then(function (response) {
+        setPenjualan({});
+        GetData();
+        setNotifMsg('Berhasil menghapus penjualan');
+        setNotifVariant('success');
+      })
+      .catch(function (error) {
+        setNotifMsg(error.response.data.message);
+        setNotifVariant('danger');
+      })
+      .finally(() => {
+        setLoading(false);
+        setShowNotif(true);
+      });
+  };
+
+  const ShowDeleteModal = (ord) => {
+    console.log(ord);
+    setDeleteShow(true);
+    setPenjualan(ord);
+  };
+
+  const HideDeleteModal = () => {
+    setDeleteShow(false);
+    setPenjualan({});
+  };
+
   return (
     <PrivateLayout title="Penjualan" active="Penjualan" loading={loading}>
       <Row className="mb-3">
@@ -155,12 +196,12 @@ const Penjualan = () => {
                 <Row>
                   <Col className="text-end">
                     <Button variant="warning" size="sm" className="ms-2" onClick={GetData}>
-                      Refresh
+                      Tampilkan
                     </Button>
                     <Button variant="wangsiap-primary" size="sm" className="ms-2" onClick={Export}>
                       Export
                     </Button>
-                    <Button href="#" variant="secondary" size="sm" className="ms-2">
+                    <Button href="penjualan/tambah" variant="secondary" size="sm" className="ms-2">
                       Tambah
                     </Button>
                   </Col>
@@ -172,7 +213,7 @@ const Penjualan = () => {
       </Row>
       <Row>
         <Col>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover responsive size="sm">
             <thead>
               <tr className="text-center">
                 <th>Tanggal</th>
@@ -185,7 +226,7 @@ const Penjualan = () => {
               </tr>
             </thead>
             <tbody>
-              {pelangganList.length > 0 &&
+              {pelangganList.length > 0 ? (
                 pelangganList.map((data, index) => (
                   <tr key={index}>
                     <td className="text-center">{data.tanggal_pesan_string}</td>
@@ -200,19 +241,28 @@ const Penjualan = () => {
                         ? 'Diterima'
                         : data.order_status_id === 5 && 'Ditolak'}
                     </td>
-                    <td className="d-flex justify-content-evenly">
+                    <td className="text-center">
                       <Button size="sm" variant="wangsiap-primary">
                         Detail
                       </Button>
-                      <Button size="sm" variant="secondary">
-                        Edit
-                      </Button>
-                      <Button size="sm" variant="danger">
-                        Delete
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        className="ms-1"
+                        onClick={() => ShowDeleteModal(data)}
+                      >
+                        Hapus
                       </Button>
                     </td>
                   </tr>
-                ))}
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={7} className="text-center">
+                    Penjualan anda untuk tanggal {dateFrom} s/d {dateTo} masih kosong
+                  </td>
+                </tr>
+              )}
             </tbody>
           </Table>
         </Col>
@@ -229,6 +279,28 @@ const Penjualan = () => {
           </Pagination>
         </Col>
       </Row>
+      <Modal
+        size="sm"
+        show={deleteShow}
+        onHide={() => setDeleteShow(false)}
+        aria-labelledby="example-modal-sizes-title-sm"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="example-modal-sizes-title-sm">Yakin akan dihapus?</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h6 className="text-center">{penjualan.nama}</h6>
+          <h6 className="mb-4 text-center">{penjualan.deskripsi}</h6>
+          <div className="d-flex justify-content-around">
+            <Button variant="danger" onClick={() => DeletePenjualan()}>
+              Hapus
+            </Button>
+            <Button className="btn-wangsiap-primary" onClick={() => HideDeleteModal()}>
+              Batal
+            </Button>
+          </div>
+        </Modal.Body>
+      </Modal>
     </PrivateLayout>
   );
 };

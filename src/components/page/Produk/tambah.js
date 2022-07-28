@@ -71,7 +71,6 @@ const TambahProduk = () => {
   const addProduct = (e) => {
     setLoading(true);
     var data = qs.stringify({
-      user_id: profile?.id,
       sku: sku,
       nama: nama,
       deskripsi: deskripsi,
@@ -86,8 +85,10 @@ const TambahProduk = () => {
 
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products`,
+      url: `${kon.API_URL}/api/products/store-my-product`,
       headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: data
@@ -101,9 +102,17 @@ const TambahProduk = () => {
         });
       })
       .catch(function (error) {
-        console.log(error);
-        setNotifMsg(error.response.data.message);
-        setNotifVariant('danger');
+        if (error.response.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+          navigate('../login', {
+            replace: true,
+            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
+          });
+        } else {
+          setNotifMsg(error.response.data.message);
+          setNotifVariant('danger');
+        }
       })
       .finally(() => {
         setLoading(false);

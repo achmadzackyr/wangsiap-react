@@ -9,6 +9,7 @@ import Produk from './components/page/Produk';
 import TambahProduk from './components/page/Produk/tambah';
 import DetailProduk from './components/page/Produk/detail';
 import Penjualan from './components/page/Penjualan';
+import TambahPenjualan from './components/page/Penjualan/tambah';
 import Pengaturan from './components/page/Pengaturan';
 import Daftar from './components/page/Daftar';
 import Login from './components/page/Login';
@@ -41,6 +42,7 @@ function App() {
         <Route path="produk/tambah" element={<TambahProduk />} />
         <Route path="produk/:skuParam" element={<DetailProduk />} />
         <Route path="penjualan" element={<Penjualan />} />
+        <Route path="penjualan/tambah" element={<TambahPenjualan />} />
         <Route path="pengaturan" element={<Pengaturan />} />
         <Route path="daftar" element={<Daftar />} />
         <Route path="login" element={<Login />} />

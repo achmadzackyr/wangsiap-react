@@ -73,8 +73,7 @@ const Pelanggan = () => {
                     <Loading />
                   </td>
                 </tr>
-              ) : (
-                pelangganList.length > 0 &&
+              ) : pelangganList.length > 0 ? (
                 pelangganList.map((data, index) => (
                   <tr key={index}>
                     <td>{data.order_date_string}</td>
@@ -94,6 +93,12 @@ const Pelanggan = () => {
                     </td>
                   </tr>
                 ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    Belum ada pelanggan
+                  </td>
+                </tr>
               )}
             </tbody>
           </Table>

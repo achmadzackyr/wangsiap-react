@@ -4,11 +4,15 @@ import { Table, Row, Col, Pagination, Button, Card, Modal } from 'react-bootstra
 import axios from 'axios';
 import Loading from '../../molecule/Loading';
 import * as kon from '../../../constants';
-import { useLocation } from 'react-router-dom';
+import * as qs from 'qs';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Notif from '../../molecule/Notif';
+import useToken from '../../hooks/useToken';
 
 const Produk = () => {
   const location = useLocation();
+  let navigate = useNavigate();
+  const { token, setToken } = useToken();
 
   const [product, setProduct] = useState({});
   const [page, setPage] = useState(1);
@@ -24,8 +28,15 @@ const Produk = () => {
 
   const GetData = () => {
     setLoading(true);
-    axios
-      .get(`${kon.API_URL}/api/products?page=${page}`)
+    axios({
+      method: 'post',
+      url: `${kon.API_URL}/api/products/get-my-product`,
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      data: qs.stringify({})
+    })
       .then(function (response) {
         setPelangganList(response.data.data.data);
 
@@ -36,7 +47,18 @@ const Produk = () => {
         setItems(pageArray);
       })
       .catch(function (error) {
-        console.log(error);
+        if (error.response.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+          navigate('../login', {
+            replace: true,
+            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
+          });
+        } else {
+          setNotifMsg(error.response.data.message);
+          setNotifVariant('danger');
+          setShowNotif(true);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -113,7 +135,7 @@ const Produk = () => {
       </Row>
       <Row>
         <Col>
-          <Table striped bordered hover size="sm">
+          <Table striped bordered hover responsive size="sm">
             <thead>
               <tr className="text-center">
                 <th>SKU</th>
@@ -130,8 +152,7 @@ const Produk = () => {
                     <Loading />
                   </td>
                 </tr>
-              ) : (
-                pelangganList.length > 0 &&
+              ) : pelangganList.length > 0 ? (
                 pelangganList.map((data, index) => (
                   <tr key={index}>
                     <td>{data.sku}</td>
@@ -155,6 +176,12 @@ const Produk = () => {
                     </td>
                   </tr>
                 ))
+              ) : (
+                <tr>
+                  <td colSpan={5} className="text-center">
+                    Produk anda masih kosong
+                  </td>
+                </tr>
               )}
             </tbody>
           </Table>
@@ -187,6 +214,8 @@ const Produk = () => {
           <Modal.Title id="example-modal-sizes-title-sm">Yakin akan dihapus?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <h6 className="text-center">{product.sku}</h6>
+          <h6 className="mb-4 text-center">{product.nama}</h6>
           <div className="d-flex justify-content-around">
             <Button variant="danger" onClick={() => DeleteProduct()}>
               Hapus

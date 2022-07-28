@@ -66,8 +66,10 @@ const DetailProduk = () => {
     });
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products/getBySku`,
+      url: `${kon.API_URL}/api/products/get-my-product-detail`,
       headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: data
@@ -88,9 +90,18 @@ const DetailProduk = () => {
         setPecahBelah(x.pecah_belah);
       })
       .catch(function (error) {
-        setNotifMsg(error.response.data.message);
-        setNotifVariant('danger');
-        setShowNotif(true);
+        if (error.response.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+          navigate('../login', {
+            replace: true,
+            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
+          });
+        } else {
+          setNotifMsg(error.response.data.message);
+          setNotifVariant('danger');
+          setShowNotif(true);
+        }
       })
       .finally(() => {
         setLoading(false);
@@ -307,7 +318,7 @@ const DetailProduk = () => {
           </Col>
         </Row>
         <Button size="sm" variant="wangsiap-primary" type="submit">
-          Simpan
+          Ubah
         </Button>
         <Button size="sm" variant="secondary" href={`/produk`} className="ms-1">
           Kembali
