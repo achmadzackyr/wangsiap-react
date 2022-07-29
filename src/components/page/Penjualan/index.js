@@ -242,7 +242,11 @@ const Penjualan = () => {
                         : data.order_status_id === 5 && 'Ditolak'}
                     </td>
                     <td className="text-center">
-                      <Button size="sm" variant="wangsiap-primary">
+                      <Button
+                        size="sm"
+                        variant="wangsiap-primary"
+                        href={`/penjualan/${data.order_id}`}
+                      >
                         Detail
                       </Button>
                       <Button
