@@ -259,16 +259,13 @@ const DetailPenjualan = () => {
     axios(config)
       .then(function (response) {
         setDestination(response.data.data);
-
         axios({
           method: 'post',
-          url: 'http://apiv2.jne.co.id:10101/tracing/api/pricedev',
+          url: `${kon.API_URL}/api/gateway/get-tarif`,
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded'
           },
           data: qs.stringify({
-            username: 'TMS',
-            api_key: 'dc32eb483f724dd82af7b1754802de5d',
             from: profile.from,
             thru: response.data.data[0].TARIFF_CODE,
             weight: berat
