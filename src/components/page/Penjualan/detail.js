@@ -27,6 +27,8 @@ const DetailPenjualan = () => {
   const [destination, setDestination] = useState({});
 
   //Order
+  const [userId, setUserId] = useState('');
+  const [orderId, setOrderId] = useState('');
   const [customerId, setCustomerId] = useState('');
   const [statusId, setStatusId] = useState('');
   const [tanggalPesan, setTanggalPesan] = useState('');
@@ -45,6 +47,9 @@ const DetailPenjualan = () => {
   const [hp, setHp] = useState('');
   const [alamat, setAlamat] = useState('');
   const [kodepos, setKodepos] = useState('');
+
+  //Product
+  const [product, setProduct] = useState({});
 
   useEffect(() => {
     GetMyProducts();
@@ -73,9 +78,13 @@ const DetailPenjualan = () => {
         const cus = response.data.data.customer;
         const orp = response.data.data.ordered_product;
 
+        setUserId(ord.user_id);
+        setOrderId(ord.id);
         setTanggalPesan(ord.tanggal_pesan_string);
-        setHarga(Math.round(ord.total_harga) + Math.round(ord.ongkir));
-        setHargaProduk(Math.round(ord.total_harga) / Math.round(ord.total_pcs));
+        setHarga(Math.round(ord.total_harga));
+        setHargaProduk(
+          (Math.round(ord.total_harga) - Math.round(ord.ongkir)) / Math.round(ord.total_pcs)
+        );
         setOngkir(ord.ongkir);
         setBerat(ord.total_berat);
         setBeratProduk(Math.round(ord.total_berat) / Math.round(ord.total_pcs));
@@ -97,6 +106,7 @@ const DetailPenjualan = () => {
           headers: {}
         })
           .then(function (response) {
+            setProduct(response.data.data);
             setSku(response.data.data.sku);
           })
           .catch(function (error) {
@@ -212,32 +222,135 @@ const DetailPenjualan = () => {
       hpParam = '62' + hpParam.substring(1);
     }
 
-    var data = qs.stringify({});
-
-    var config = {
+    //Cek ongkir & zipcode
+    axios({
       method: 'post',
-      url: `${kon.API_URL}/api/gateway/order`,
+      url: `${kon.API_URL}/api/gateway/get-destinations-by-zip`,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      data: data
-    };
-
-    axios(config)
+      data: qs.stringify({
+        kodepos: kodepos
+      })
+    })
       .then(function (response) {
-        navigate('../penjualan', {
-          replace: true,
-          state: { msg: 'Berhasil Menambah Penjualan', variant: 'success' }
-        });
+        if (response.data.data.length == 0) {
+          setLoading(false);
+          setNotifMsg('Kodepos tidak ditemukan. Silahkan periksa kodepos anda dan coba lagi!');
+          setNotifVariant('danger');
+          setShowNotif(true);
+        } else {
+          const dest = response.data.data[0];
+          setDestination(response.data.data);
+
+          axios({
+            method: 'post',
+            url: `${kon.API_URL}/api/gateway/get-tarif`,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: qs.stringify({
+              from: profile.from,
+              thru: dest.TARIFF_CODE,
+              weight: berat
+            })
+          })
+            .then(function (response) {
+              const tariff = response.data.price.filter(
+                (x) => x.service_display === 'REG' || x.service_display === 'CTC'
+              )[0];
+
+              const totalOngkir = Math.round(tariff.price);
+              setOngkir(totalOngkir);
+              const totalHargaBaru = Math.round(harga) + totalOngkir;
+              setHarga(totalHargaBaru);
+
+              //Update customer
+              axios({
+                method: 'post',
+                url: `${kon.API_URL}/api/customers/${customerId}`,
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: qs.stringify({
+                  nama: nama,
+                  alamat: alamat,
+                  kodepos: kodepos,
+                  hp: hpParam,
+                  kecamatan: dest.DISTRICT_NAME,
+                  provinsi: dest.PROVINCE_NAME,
+                  kota: dest.CITY_NAME,
+                  _method: 'PUT'
+                })
+              })
+                .then(function (response) {
+                  //Update Order
+                  axios({
+                    method: 'post',
+                    url: `${kon.API_URL}/api/orders/${orderId}`,
+                    headers: {
+                      'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: qs.stringify({
+                      customer_id: customerId,
+                      payment_id: cod == 1 ? 1 : 2,
+                      user_id: userId,
+                      order_status_id: statusId,
+                      total_harga: totalHargaBaru,
+                      total_berat: berat,
+                      total_pcs: pcs,
+                      awb: '',
+                      from: profile.from,
+                      thru: dest.TARIFF_CODE,
+                      ongkir: totalOngkir,
+                      _method: 'PUT'
+                    })
+                  })
+                    .then(function (response) {
+                      console.log(JSON.stringify(response.data));
+                      //Update Ordered Product
+                      axios({
+                        method: 'post',
+                        url: `${kon.API_URL}/api/ordered-products/update-by-order`,
+                        headers: {
+                          'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        data: qs.stringify({
+                          order_id: orderId,
+                          product_id: product.id,
+                          pcs: pcs
+                        })
+                      })
+                        .then(function (response) {
+                          setNotifMsg('Berhasil mengubah data penjualan');
+                          setNotifVariant('success');
+                        })
+                        .catch(function (error) {
+                          console.log(error);
+                        });
+                    })
+                    .catch(function (error) {
+                      console.log(error);
+                    });
+                })
+                .catch(function (error) {
+                  console.log(error);
+                  setNotifMsg(error.response.data.message);
+                  setNotifVariant('danger');
+                })
+                .finally(() => {
+                  setLoading(false);
+                  setShowNotif(true);
+                });
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+        }
       })
       .catch(function (error) {
         console.log(error);
-        setNotifMsg(error.response.data.message);
-        setNotifVariant('danger');
-      })
-      .finally(() => {
-        setLoading(false);
-        setShowNotif(true);
       });
     e.preventDefault();
   };
@@ -258,33 +371,44 @@ const DetailPenjualan = () => {
 
     axios(config)
       .then(function (response) {
-        setDestination(response.data.data);
-        axios({
-          method: 'post',
-          url: `${kon.API_URL}/api/gateway/get-tarif`,
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          data: qs.stringify({
-            from: profile.from,
-            thru: response.data.data[0].TARIFF_CODE,
-            weight: berat
+        if (response.data.data.length == 0) {
+          setLoading(false);
+          setNotifMsg('Kodepos tidak ditemukan. Silahkan periksa kodepos anda dan coba lagi!');
+          setNotifVariant('danger');
+          setShowNotif(true);
+        } else {
+          setDestination(response.data.data);
+          axios({
+            method: 'post',
+            url: `${kon.API_URL}/api/gateway/get-tarif`,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            data: qs.stringify({
+              from: profile.from,
+              thru: response.data.data[0].TARIFF_CODE,
+              weight: berat
+            })
           })
-        })
-          .then(function (response) {
-            const tariff = response.data.price.filter((x) => x.service_display === 'REG')[0];
+            .then(function (response) {
+              const tariff = response.data.price.filter(
+                (x) => x.service_display === 'REG' || x.service_display === 'CTC'
+              )[0];
 
-            const totalOngkir = Math.round(tariff.price);
-            setOngkir(totalOngkir);
-            const totalHargaBaru = Math.round(harga) + totalOngkir;
-            setHarga(totalHargaBaru);
-          })
-          .catch(function (error) {
-            console.log(error);
-          })
-          .finally(() => {
-            setLoading(false);
-          });
+              const totalOngkir = Math.round(tariff.price);
+              setOngkir(totalOngkir);
+              const totalHargaBaru = Math.round(harga) + totalOngkir;
+              setHarga(totalHargaBaru);
+            })
+            .catch(function (error) {
+              setNotifMsg('Gagal mengecek ongkos kirim. Silahkan coba lagi!');
+              setNotifVariant('danger');
+              setShowNotif(true);
+            })
+            .finally(() => {
+              setLoading(false);
+            });
+        }
       })
       .catch(function (error) {
         console.log(error);
@@ -294,6 +418,7 @@ const DetailPenjualan = () => {
   const onChangeSku = (e) => {
     setSku(e.target.value);
     let selected = myProducts.filter((x) => x.sku == e.target.value)[0];
+    setProduct(selected);
     setHargaProduk(selected.harga);
     setBeratProduk(selected.berat);
     setHarga(Math.round(selected.harga) * pcs + Math.round(ongkir));
