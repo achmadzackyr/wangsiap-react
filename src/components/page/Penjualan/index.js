@@ -5,14 +5,21 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import * as kon from '../../../constants';
 import * as qs from 'qs';
+import useToken from '../../hooks/useToken';
+import useProfile from '../../hooks/useProfile';
+import { useNavigate } from 'react-router-dom';
 
 const Penjualan = () => {
+  let navigate = useNavigate();
+
+  const { token, setToken } = useToken();
+  const { profile, setProfile } = useProfile();
   const [page, setPage] = useState(1);
   const [items, setItems] = useState([]);
   const [pelangganList, setPelangganList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [orderStatus, setOrderStatus] = useState('2');
-  const [noPenerima, setNoPenerima] = useState('6282321718394');
+  const [noPenerima, setNoPenerima] = useState('');
   const [dateFrom, setDateFrom] = useState(new Date().toISOString().split('T')[0]);
   const [dateTo, setDateTo] = useState(new Date().toISOString().split('T')[0]);
   const [perPage, setPerPage] = useState(10);
@@ -96,6 +103,10 @@ const Penjualan = () => {
   };
 
   useEffect(() => {
+    GetProfile();
+  }, []);
+
+  useEffect(() => {
     GetData();
   }, [page]);
 
@@ -120,6 +131,38 @@ const Penjualan = () => {
       .finally(() => {
         setLoading(false);
         setShowNotif(true);
+      });
+  };
+
+  const GetProfile = () => {
+    setLoading(true);
+    var config = {
+      method: 'get',
+      url: `${kon.API_URL}/api/auth/profile`,
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+    axios(config)
+      .then(function (response) {
+        setProfile(response.data.data);
+        setNoPenerima(response.data.data.hp);
+      })
+      .catch(function (error) {
+        if (error.response.status === 401) {
+          localStorage.clear();
+          window.location.reload();
+          navigate('../../login', {
+            replace: true,
+            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
+          });
+        } else {
+          alert(error.response.data.message);
+        }
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
