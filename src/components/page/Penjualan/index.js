@@ -107,8 +107,10 @@ const Penjualan = () => {
   }, []);
 
   useEffect(() => {
-    GetData();
-  }, [page]);
+    if (noPenerima) {
+      GetData();
+    }
+  }, [page, noPenerima]);
 
   const DeletePenjualan = () => {
     setLoading(true);
