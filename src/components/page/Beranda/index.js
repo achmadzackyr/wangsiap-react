@@ -131,8 +131,8 @@ const Beranda = () => {
 
     axios(config)
       .then(function (response) {
-        //const hpRes = response.data.data.hp;
-        const hpRes = '6285223670378';
+        const hpRes = response.data.data.hp;
+        //const hpRes = '6285223670378';
         setHp(hpRes);
         axios({
           method: 'get',
