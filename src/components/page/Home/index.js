@@ -13,7 +13,10 @@ const Home = () => {
       <div style={{ backgroundColor: '#F5F6FC' }}>
         <Container>
           <Row className="align-items-center pt-4">
-            <Col md={6} sm={12}>
+            <Col md={6} sm={12} className="order-md-last order-lg-last">
+              <Image alt="hero" src={heroimg} width="80%" />
+            </Col>
+            <Col md={6} sm={12} className="order-md-first order-lg-first">
               <Row>
                 <Col>
                   <h1 style={{ color: '#205072' }}>Integrator Bisnis Online</h1>
@@ -34,9 +37,6 @@ const Home = () => {
                   </Button>
                 </Col>
               </Row>
-            </Col>
-            <Col md={6} sm={12}>
-              <Image alt="hero" src={heroimg} width="80%" />
             </Col>
           </Row>
         </Container>
@@ -69,7 +69,10 @@ const Home = () => {
       <div style={{ backgroundColor: '#F5F6FC ' }}>
         <Container>
           <Row className="align-items-center pt-4">
-            <Col md={6} sm={12}>
+            <Col md={6} sm={12} className="order-md-last order-lg-last">
+              <Image alt="hero" src={botimg} width="80%" />
+            </Col>
+            <Col md={6} sm={12} className="order-md-first order-lg-first">
               <Row>
                 <Col>
                   <h1 style={{ color: '#205072' }}>Whatsapp Bot</h1>
@@ -84,9 +87,6 @@ const Home = () => {
                   </p>
                 </Col>
               </Row>
-            </Col>
-            <Col md={6} sm={12}>
-              <Image alt="hero" src={botimg} width="80%" />
             </Col>
           </Row>
         </Container>
@@ -119,7 +119,10 @@ const Home = () => {
       <div style={{ backgroundColor: '#F5F6FC ' }}>
         <Container>
           <Row className="align-items-center pt-4">
-            <Col md={6} sm={12}>
+            <Col md={6} sm={12} className="order-md-last order-lg-last">
+              <Image alt="hero" src={validasiimg} width="80%" />
+            </Col>
+            <Col md={6} sm={12} className="order-md-first order-lg-first">
               <Row>
                 <Col>
                   <h1 style={{ color: '#205072' }}>Validasi Pembayaran Otomatis</h1>
@@ -134,9 +137,6 @@ const Home = () => {
                   </p>
                 </Col>
               </Row>
-            </Col>
-            <Col md={6} sm={12}>
-              <Image alt="hero" src={validasiimg} width="80%" />
             </Col>
           </Row>
         </Container>
