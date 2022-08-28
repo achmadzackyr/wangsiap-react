@@ -4,7 +4,7 @@ import Navibar from '../../organism/Navibar';
 export default function PublicLayout({ children }) {
   return (
     <>
-      <Navibar />
+      <Navibar source="public" />
       <main>{children}</main>
     </>
   );

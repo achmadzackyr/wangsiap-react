@@ -8,7 +8,7 @@ import useToken from '../../hooks/useToken';
 import useProfile from '../../hooks/useProfile';
 import Loading from '../../molecule/Loading';
 
-const Navibar = ({ active }) => {
+const Navibar = ({ active, source }) => {
   const { profile, setProfile } = useProfile();
 
   const { token, setToken } = useToken();
@@ -40,7 +40,7 @@ const Navibar = ({ active }) => {
 
   return (
     <>
-      <Navbar bg="wangsiap-primary" variant="dark" expand="md" style={{ zIndex: 6 }}>
+      <Navbar bg="wangsiap-final" variant="dark" expand="md" style={{ zIndex: 6 }}>
         <Container fluid>
           <Link to="/beranda">
             <Navbar.Brand>
@@ -93,11 +93,23 @@ const Navibar = ({ active }) => {
           <Navbar.Collapse className="justify-content-end">
             <Navbar.Text>
               {token ? (
-                <Button onClick={() => setLogoutShow(true)} className="logout-button">
-                  Keluar
-                </Button>
+                source == 'private' ? (
+                  <Button onClick={() => setLogoutShow(true)} variant="wangsiap-primary">
+                    Keluar
+                  </Button>
+                ) : (
+                  <>
+                    <Button href="/beranda" variant="wangsiap-primary">
+                      Beranda
+                    </Button>
+                    {' | '}
+                    <Button onClick={() => setLogoutShow(true)} className="logout-button">
+                      Keluar
+                    </Button>
+                  </>
+                )
               ) : (
-                <Button href="/login" className="logout-button">
+                <Button variant="wangsiap-primary" href="/login">
                   Login
                 </Button>
               )}

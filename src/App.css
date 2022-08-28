@@ -79,6 +79,11 @@
   background-color: #3a5664 !important;
 }
 
+.bg-wangsiap-final {
+  --bs-bg-opacity: 1;
+  background-color: #205072 !important;
+}
+
 .loading {
   position: fixed;
   top: 0; right: 0;

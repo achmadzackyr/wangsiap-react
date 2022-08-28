@@ -8,7 +8,7 @@ import BreadcrumbComponent from '../../molecule/Breadcrumb';
 export default function PrivateLayout({ children, title, active, loading, prevs }) {
   return (
     <>
-      <Navibar active={active} />
+      <Navibar active={active} source="private" />
       <div className="container-fluid">
         <Row className="vh-100">
           <Sidebar active={active} />
