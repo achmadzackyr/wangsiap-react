@@ -69,13 +69,13 @@ const Navibar = ({ active, source }) => {
                 <Nav.Link className={active === 'Pelanggan' && 'active'} href="/pelanggan">
                   Pelanggan
                 </Nav.Link>
-                <Nav.Link className={active === 'Laporan' && 'active'} href="/laporan">
+                {/* <Nav.Link className={active === 'Laporan' && 'active'} href="/laporan">
                   Laporan
-                </Nav.Link>
+                </Nav.Link> */}
                 <Nav.Link className={active === 'Pengaturan' && 'active'} href="/pengaturan">
                   Pengaturan
                 </Nav.Link>
-                <hr />
+                {/* <hr />
                 <Nav.Link className={active === 'Akun' && 'active'} href="/akun">
                   Akun
                 </Nav.Link>
@@ -84,7 +84,7 @@ const Navibar = ({ active, source }) => {
                 </Nav.Link>
                 <Nav.Link className={active === 'Pembayaran' && 'active'} href="/pembayaran">
                   Pembayaran
-                </Nav.Link>
+                </Nav.Link> */}
                 <hr />
                 <Navbar.Text className="ms-3">{profile?.nama}</Navbar.Text>
               </Nav>

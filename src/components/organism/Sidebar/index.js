@@ -39,12 +39,12 @@ export default function Sidebar({ active }) {
               Pelanggan
             </NavLink>
           </NavItem>
-          <NavItem>
+          {/* <NavItem>
             <NavLink className={active === 'Laporan' && 'active'} href="/laporan">
               <i className="bi bi-file-text"></i>
               Laporan
             </NavLink>
-          </NavItem>
+          </NavItem> */}
           <NavItem>
             <NavLink className={active === 'Pengaturan' && 'active'} href="/pengaturan">
               <i className="bi bi-gear"></i>
@@ -53,7 +53,7 @@ export default function Sidebar({ active }) {
           </NavItem>
         </ul>
 
-        <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+        {/* <h6 className="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
           <span>Master</span>
           <a className="link-secondary" href="#" aria-label="Add a new report"></a>
         </h6>
@@ -76,7 +76,7 @@ export default function Sidebar({ active }) {
               Pembayaran
             </NavLink>
           </NavItem>
-        </ul>
+        </ul> */}
       </div>
     </nav>
   );
