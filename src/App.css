@@ -74,6 +74,17 @@
   border-color: #25D366 !important;
 }
 
+.btn-wangsiap-outline-primary {
+  color: #25D366 !important;
+  border-color: #25D366 !important;
+}
+
+.btn-wangsiap-outline-primary:hover {
+  color: #fff !important;
+  background-color: #25D366 !important;
+  border-color: #25D366 !important;
+}
+
 .bg-wangsiap-primary {
   --bs-bg-opacity: 1;
   background-color: #3a5664 !important;

@@ -1,14 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PrivateLayout from '../../layout/private';
 import axios from 'axios';
 import * as kon from '../../../constants';
 import * as qs from 'qs';
 import useToken from '../../hooks/useToken';
 import { useNavigate } from 'react-router-dom';
-import { Row, Col, Button, Accordion, Image, Modal } from 'react-bootstrap';
+import {
+  Row,
+  Col,
+  Button,
+  Accordion,
+  Image,
+  Modal,
+  Form,
+  FloatingLabel,
+  Overlay,
+  Tooltip
+} from 'react-bootstrap';
 
 const Beranda = () => {
   let navigate = useNavigate();
+  const formatText = '#Nama Penerima#Alamat#Kodepos#No.Hp Penerima#SKU#PCS#COD Y/N';
+  const formatExampleText =
+    '#Hasan Sadikin#Jl. Ir. H. Juanda No.12, Panyingkiran, Kec. Indihiang, Kab. Tasikmalaya#46151#085223670378#baju-A01-L#1#Y';
 
   const { token, setToken } = useToken();
   const [loading, setLoading] = useState(false);
@@ -20,6 +34,11 @@ const Beranda = () => {
   const [showCountdown, setShowCountdown] = useState(false);
   const [count, setCount] = useState(60);
   const [dcShow, setDcShow] = useState(false);
+
+  const [showTooltip, setShowTooltip] = useState(false);
+  const [showTooltipExample, setShowTooltipExample] = useState(false);
+  const target = useRef(null);
+  const targetExample = useRef(null);
 
   const DeleteSession = async (hpReq) => {
     setLoading(true);
@@ -182,6 +201,24 @@ const Beranda = () => {
       });
   };
 
+  const copyFormat = () => {
+    navigator.clipboard.writeText(formatText);
+    setShowTooltip(true);
+
+    setTimeout(function () {
+      setShowTooltip(false);
+    }, 1000);
+  };
+
+  const copyFormatExample = () => {
+    navigator.clipboard.writeText(formatExampleText);
+    setShowTooltipExample(true);
+
+    setTimeout(function () {
+      setShowTooltipExample(false);
+    }, 1000);
+  };
+
   useEffect(() => {
     CheckProfile();
   }, []);
@@ -189,7 +226,7 @@ const Beranda = () => {
   return (
     <PrivateLayout title="Beranda" active="Beranda" loading={loading}>
       <Row>
-        <Col md={4} sm={12}>
+        <Col md={4} sm={12} className="mb-2">
           <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
               <Accordion.Header>Status Koneksi</Accordion.Header>
@@ -240,10 +277,67 @@ const Beranda = () => {
         <Col md={8} sm={12}>
           <Accordion defaultActiveKey="0">
             <Accordion.Item eventKey="0">
-              <Accordion.Header>Grafik</Accordion.Header>
+              <Accordion.Header>Format Pemesanan</Accordion.Header>
               <Accordion.Body>
                 <Row>
-                  <Col>(Coming Soon)</Col>
+                  <Col md={6} sm={12} className="mb-3">
+                    <FloatingLabel controlId="floatingTextarea2" label="Format" className="mb-2">
+                      <Form.Control
+                        as="textarea"
+                        placeholder="Leave a comment here"
+                        style={{ height: '120px' }}
+                        value={formatText}
+                        readOnly
+                      />
+                    </FloatingLabel>
+                    <div className="d-grid gap-2">
+                      <Button
+                        ref={target}
+                        onClick={() => copyFormat()}
+                        variant="wangsiap-outline-primary"
+                      >
+                        Salin
+                      </Button>
+                      <Overlay target={target.current} show={showTooltip} placement="bottom">
+                        {(props) => (
+                          <Tooltip id="overlay-example" {...props}>
+                            Berhasil Disalin
+                          </Tooltip>
+                        )}
+                      </Overlay>
+                    </div>
+                  </Col>
+                  <Col md={6} sm={12}>
+                    <FloatingLabel controlId="floatingTextarea2" label="Contoh" className="mb-2">
+                      <Form.Control
+                        as="textarea"
+                        placeholder="Leave a comment here"
+                        style={{ height: '120px' }}
+                        value="#Hasan Sadikin#Jl. Ir. H. Juanda No.12, Panyingkiran, Kec. Indihiang, Kab. Tasikmalaya#46151#085223670378#baju-A01-L#1#Y"
+                        readOnly
+                      />
+                    </FloatingLabel>
+                    <div className="d-grid gap-2">
+                      <Button
+                        ref={targetExample}
+                        onClick={() => copyFormatExample()}
+                        variant="wangsiap-outline-primary"
+                      >
+                        Salin
+                      </Button>
+                      <Overlay
+                        target={targetExample.current}
+                        show={showTooltipExample}
+                        placement="bottom"
+                      >
+                        {(props) => (
+                          <Tooltip id="overlay-example" {...props}>
+                            Berhasil Disalin
+                          </Tooltip>
+                        )}
+                      </Overlay>
+                    </div>
+                  </Col>
                 </Row>
               </Accordion.Body>
             </Accordion.Item>
