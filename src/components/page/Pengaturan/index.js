@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import PrivateLayout from '../../layout/private';
 import * as kon from '../../../constants';
 import * as qs from 'qs';
-import { Form, Button, Row, Col, FloatingLabel } from 'react-bootstrap';
+import { Form, Button, Row, Col, InputGroup } from 'react-bootstrap';
 import Notif from '../../molecule/Notif';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import axios from 'axios';
@@ -33,6 +33,7 @@ function Pengaturan() {
   const [kota, setKota] = useState('');
   const [provinsi, setProvinsi] = useState('');
   const [kodepos, setKodepos] = useState('');
+  const [penanganan, setPenanganan] = useState(0);
 
   useEffect(() => {
     currentUser();
@@ -152,7 +153,7 @@ function Pengaturan() {
   return (
     <PrivateLayout title="Pengaturan" active="Pengaturan" loading={loading}>
       <Form
-        className="mb-5"
+        className="myform mb-5"
         onSubmit={(e) => {
           updateUser(e);
         }}
@@ -160,19 +161,20 @@ function Pengaturan() {
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3" controlId="formEmail">
-              <Form.Label>Email</Form.Label>
+              <Form.Label className="required">Email</Form.Label>
               <Form.Control type="email" placeholder="Enter email" readOnly value={email} />
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3" controlId="formHp">
-              <Form.Label>HP</Form.Label>
+              <Form.Label className="required">HP</Form.Label>
               <Form.Control
                 required
                 type="text"
                 placeholder="08123456...."
                 value={hp}
                 onChange={(e) => setHp(e.target.value)}
+                readOnly
               />
             </Form.Group>
           </Col>
@@ -180,7 +182,7 @@ function Pengaturan() {
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3" controlId="formNama">
-              <Form.Label>Nama</Form.Label>
+              <Form.Label className="required">Nama</Form.Label>
               <Form.Control
                 required
                 type="text"
@@ -205,7 +207,7 @@ function Pengaturan() {
           </Col>
         </Row>
         <Row>
-          <Col md={4}>
+          <Col md={6}>
             <Form.Group className="mb-3" controlId="formJneId">
               <Form.Label>JNE Id</Form.Label>
               <Form.Control
@@ -216,7 +218,7 @@ function Pengaturan() {
               />
             </Form.Group>
           </Col>
-          <Col md={4}>
+          <Col md={6}>
             <Form.Group className="mb-3" controlId="formJneIdCod">
               <Form.Label>JNE Id COD</Form.Label>
               <Form.Control
@@ -227,7 +229,27 @@ function Pengaturan() {
               />
             </Form.Group>
           </Col>
-          <Col md={4}>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <Form.Group className="mb-3" controlId="formJneId">
+              <Form.Label>
+                Biaya Penanganan COD <small>(sesuai perjanjian dengan JNE)</small>
+              </Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type="number"
+                  step="0.1"
+                  placeholder="Biaya penanganan cod"
+                  value={penanganan}
+                  onChange={(e) => setPenanganan(e.target.value)}
+                  aria-describedby="harga-icon"
+                />
+                <InputGroup.Text id="harga-icon">%</InputGroup.Text>
+              </InputGroup>
+            </Form.Group>
+          </Col>
+          <Col md={6}>
             <AsyncTypeahead
               id="origin-autocomplete"
               isLoading={loadingOrigin}
@@ -243,7 +265,7 @@ function Pengaturan() {
               renderInput={({ inputRef, referenceElementRef, ...inputProps }) => {
                 return (
                   <Form.Group className="mb-3" controlId="formFrom">
-                    <Form.Label>Kota Asal Pengiriman</Form.Label>
+                    <Form.Label className="required">Kota Asal Pengiriman</Form.Label>
                     <Form.Control
                       required
                       {...inputProps}

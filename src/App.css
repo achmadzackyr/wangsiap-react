@@ -158,3 +158,9 @@
   border-color: #25D366 !important;
   text-decoration: none !important;
 }
+
+.myform .required:after {
+  content: " *";
+    color: red;
+    font-weight: 100;
+}

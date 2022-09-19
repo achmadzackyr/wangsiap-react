@@ -34,6 +34,7 @@ const DetailProduk = () => {
   const [volume, setVolume] = useState('');
   const [deskripsi, setDeskripsi] = useState('');
   const [pecahBelah, setPecahBelah] = useState(0);
+  const [foto, setFoto] = useState(null);
 
   const panjangChange = (e) => {
     setPanjang(e.target.value);
@@ -57,6 +58,11 @@ const DetailProduk = () => {
   const calculateVolume = (panjang, lebar, tinggi) => {
     let v = (panjang * lebar * tinggi) / 6000;
     setVolume(v.toFixed(2));
+  };
+
+  const uploadSingleFile = (e) => {
+    console.log(e);
+    setFoto(URL.createObjectURL(e.target.files[0]));
   };
 
   useEffect(() => {
@@ -163,6 +169,26 @@ const DetailProduk = () => {
           editProduct(e);
         }}
       >
+        {foto && (
+          <Row>
+            <Col className="text-center">
+              <img src={foto} alt="" style={{ height: '250px' }} />
+            </Col>
+          </Row>
+        )}
+        <Row>
+          <Col>
+            <Form.Group controlId="formFile" className="mb-3">
+              <Form.Label>Foto</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={(e) => {
+                  uploadSingleFile(e);
+                }}
+              />
+            </Form.Group>
+          </Col>
+        </Row>
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3" controlId="formNama">

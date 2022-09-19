@@ -15,6 +15,7 @@ import Pengaturan from './components/page/Pengaturan';
 import Daftar from './components/page/Daftar';
 import Login from './components/page/Login';
 import Kodepos from './components/page/Kodepos';
+import Order from './components/page/Order';
 import { Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import useToken from './components/hooks/useToken';
@@ -49,6 +50,7 @@ function App() {
         <Route path="daftar" element={<Daftar />} />
         <Route path="login" element={<Login />} />
         <Route path="kodepos" element={<Kodepos />} />
+        <Route path="order/:username" element={<Order />} />
       </Routes>
     </div>
   );
