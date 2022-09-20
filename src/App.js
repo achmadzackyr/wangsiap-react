@@ -27,7 +27,12 @@ function App() {
   const { token, setToken } = useToken();
 
   useEffect(() => {
-    if (!token && location.pathname != '/kodepos' && location.pathname != '/') {
+    if (
+      !token &&
+      location.pathname != '/kodepos' &&
+      location.pathname != '/' &&
+      !location.pathname.startsWith('/order/')
+    ) {
       navigate('../login', { replace: true });
     }
   }, []);
