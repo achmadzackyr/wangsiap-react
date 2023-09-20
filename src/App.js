@@ -55,7 +55,7 @@ function App() {
         <Route path="daftar" element={<Daftar />} />
         <Route path="login" element={<Login />} />
         <Route path="kodepos" element={<Kodepos />} />
-        <Route path="order/:username" element={<Order />} />
+        <Route path="order/:hppenjual/:formname" element={<Order />} />
       </Routes>
     </div>
   );

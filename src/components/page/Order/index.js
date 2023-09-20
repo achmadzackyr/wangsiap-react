@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, Button, Form, InputGroup, Container } from 'react-bootstrap';
+import { Row, Col, Button, Form, InputGroup, Container, Table } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import Loading from '../../molecule/Loading';
@@ -11,7 +11,7 @@ import wangsiaplogo from '../../../imgs/wangsiap-40px.png';
 import '../../../../src/checkout.css';
 
 const Order = () => {
-  const { username } = useParams();
+  const { hppenjual, formname } = useParams();
   let navigate = useNavigate();
   const { token, setToken } = useToken();
 
@@ -32,67 +32,42 @@ const Order = () => {
   const [chat, setChat] = useState('');
   const [profile, setProfile] = useState({});
 
-  const GetMyProducts = () => {
-    setLoading(true);
-    var data = qs.stringify({});
+  const LoadData = () => {
+    var data = qs.stringify({
+      hp: hppenjual,
+      url: formname
+    });
     var config = {
       method: 'post',
-      url: `${kon.API_URL}/api/products/get-my-product`,
+      url: `${kon.API_URL}/api/form-products/get-by-url`,
       headers: {
-        Accept: 'application/json',
-        Authorization: `Bearer ${token}`
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: data
     };
 
     axios(config)
       .then(function (response) {
-        setMyProducts(response.data.data.data);
+        const list = [...myProducts];
+        response.data.data.length > 0 &&
+          response.data.data.map((data, index) => {
+            list[index] = {
+              productId: data.product_id
+            };
+            // list[index].productId = data.product_id;
+            // list[index].productSku = data.sku;
+            // list[index].productName = data.nama;
+            // list[index].productPrice = data.harga;
+            // list[index].quantity = 0;
+          });
+        console.log(list);
+        setMyProducts(list);
       })
       .catch(function (error) {
-        if (error.response.status === 401) {
-          localStorage.clear();
-          window.location.reload();
-          navigate('../../login', {
-            replace: true,
-            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
-          });
-        } else {
-          setNotifMsg(error.response.data.message);
-          setNotifVariant('danger');
-          setShowNotif(true);
-        }
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  };
-
-  const GetProfile = () => {
-    setLoading(true);
-    var config = {
-      method: 'get',
-      url: `${kon.API_URL}/api/auth/profile`,
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    };
-
-    axios(config)
-      .then(function (response) {
-        setProfile(response.data.data);
-      })
-      .catch(function (error) {
-        if (error.response.status === 401) {
-          localStorage.clear();
-          window.location.reload();
-          navigate('../../login', {
-            replace: true,
-            state: { msg: 'Sesi Kadaluarsa, Silahkan Login Kembali!', variant: 'danger' }
-          });
-        } else {
-          alert(error.response.data.message);
-        }
+        console.log(error);
+        // setNotifMsg(error.response.data.message);
+        // setNotifVariant('danger');
+        // setShowNotif(true);
       })
       .finally(() => {
         setLoading(false);
@@ -149,9 +124,7 @@ const Order = () => {
   const addSku = () => {};
 
   useEffect(() => {
-    GetMyProducts();
-    //GetPayments();
-    GetProfile();
+    LoadData();
   }, []);
 
   return (
@@ -172,86 +145,59 @@ const Order = () => {
                 <Row>
                   <Col className="checkout-body__form checkout-body__form-single">
                     <div className="contact-information">
-                      <div class="contact-information-header section-title">
+                      <div className="contact-information-header section-title">
                         <span>Data Pesanan:</span>
                       </div>
-                      <Row>
-                        <Col xs={6} md={7}>
-                          <Form.Label>SKU</Form.Label>
-                        </Col>
-                        <Col xs={6} md={5}>
-                          <Form.Label>Jumlah</Form.Label>
-                        </Col>
-                      </Row>
-                      <Row>
-                        <Col xs={6} md={7}>
-                          <Form.Group className="mb-3" controlId="formHp">
-                            <Form.Select
-                              aria-label="SKU"
-                              value={sku}
-                              onChange={(e) => setSku(e.target.value)}
-                            >
-                              <option value={''}>Pilih SKU produk</option>
-                              {myProducts.length > 0 ? (
-                                myProducts.map((data, index) => (
-                                  <option value={data.sku} key={index}>
-                                    {data.sku} - {data.nama}
-                                  </option>
-                                ))
-                              ) : (
-                                <option value="0">Belum ada produk</option>
-                              )}
-                            </Form.Select>
-                          </Form.Group>
-                        </Col>
-                        <Col xs={6} md={5}>
-                          <Form.Group className="mb-3" controlId="formPcs">
-                            <InputGroup className="input-number-controls">
-                              <Button
-                                variant="outline-secondary"
-                                id="btn-sub-qty"
-                                onClick={() => setPcs(pcs > 0 ? pcs - 1 : pcs)}
-                              >
-                                -
-                              </Button>
-                              <Form.Control
-                                required
-                                type="number"
-                                placeholder="0"
-                                value={pcs}
-                                min={0}
-                                max={9999}
-                                onChange={(e) => setPcs(e.target.value)}
-                                className="text-center"
-                              />
-                              <Button
-                                variant="outline-secondary"
-                                id="btn-add-qty"
-                                onClick={() => setPcs(pcs + 1)}
-                              >
-                                +
-                              </Button>
-                              <Button
-                                variant="danger"
-                                style={{ backgroundColor: '#dc3545' }}
-                                id="btn-add-qty"
-                                onClick={() => setPcs(pcs + 1)}
-                              >
-                                X
-                              </Button>
-                            </InputGroup>
-                          </Form.Group>
-                        </Col>
-                        {/* <Col xs={1}>
-                          <Button variant="danger">X</Button>
-                        </Col> */}
-                      </Row>
-                      <Button variant="wangsiap-primary" onClick={() => addSku()}>
-                        Tambah
-                      </Button>
+                      <Table striped bordered hover>
+                        <thead>
+                          <tr>
+                            <th>Pilihan produk</th>
+                            <th>Jumlah</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {myProducts.map((data, index) => (
+                            <tr>
+                              <td>
+                                {data.productSku} - {data.productName}
+                              </td>
+                              <td>
+                                <Form.Group className="mb-3" controlId="formPcs">
+                                  <InputGroup className="input-number-controls">
+                                    <Button
+                                      variant="outline-secondary"
+                                      id="btn-sub-qty"
+                                      onClick={() => setPcs(pcs > 0 ? pcs - 1 : pcs)}
+                                    >
+                                      -
+                                    </Button>
+                                    <Form.Control
+                                      required
+                                      type="number"
+                                      placeholder="0"
+                                      value={pcs}
+                                      min={0}
+                                      max={9999}
+                                      onChange={(e) => setPcs(e.target.value)}
+                                      className="text-center"
+                                    />
+                                    <Button
+                                      variant="outline-secondary"
+                                      id="btn-add-qty"
+                                      onClick={() => setPcs(pcs + 1)}
+                                    >
+                                      +
+                                    </Button>
+                                  </InputGroup>
+                                </Form.Group>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
                     </div>
                     <div className="contact-information">
-                      <div class="contact-information-header section-title">
+                      <div className="contact-information-header section-title">
                         <span>Data Penerima:</span>
                       </div>
                       <Form.Group className="mb-3" controlId="formNama">
@@ -314,26 +260,6 @@ const Order = () => {
                         </Form.Select>
                       </Form.Group>
 
-                      <Form.Group className="mb-3" controlId="formHp">
-                        <Form.Label>SKU Pesanan</Form.Label>
-                        <Form.Select
-                          aria-label="SKU"
-                          value={sku}
-                          onChange={(e) => setSku(e.target.value)}
-                        >
-                          <option value={''}>Pilih SKU produk</option>
-                          {myProducts.length > 0 ? (
-                            myProducts.map((data, index) => (
-                              <option value={data.sku} key={index}>
-                                {data.sku} - {data.nama}
-                              </option>
-                            ))
-                          ) : (
-                            <option value="0">Belum ada produk</option>
-                          )}
-                        </Form.Select>
-                      </Form.Group>
-
                       <Form.Group className="mb-3" controlId="formPcs">
                         <Form.Label>Jumlah Pesanan</Form.Label>
                         <Form.Control
@@ -355,7 +281,7 @@ const Order = () => {
           </div>
           <div className="app-footer">
             <div className="footer-title">Powered by Wangsiap.com</div>
-            <div class="footer-copyright">Copyright © 2022</div>
+            <div className="footer-copyright">Copyright © 2022</div>
           </div>
         </div>
       </Container>
